@@ -1,7 +1,8 @@
 {
-    "name": "AssetRegister.Runtime",
+    "name": "AssetRegister.Samples",
     "rootNamespace": "",
     "references": [
+        "GUID:d3a24a0606339184d9d268240e831b06",
         "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
