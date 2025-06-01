@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace Plugins.AssetRegister.Runtime
 {
 	[JsonObject]
-	public class AssetRegisterError
+	public class Error
 	{
 		[JsonProperty("message")] public string Message { get; private set; }
 	}
