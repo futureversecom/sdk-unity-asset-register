@@ -40,7 +40,7 @@ namespace Plugins.AssetRegister.Runtime
 			public string ParameterType;
 		}
 		
-		private readonly string _queryName;
+		private readonly string _queryResponseName;
 		private readonly List<ParameterInfo> _parameters = new();
 		private readonly List<FieldTreeNode> _baseFieldTreeNodes = new();
 		private TVariables _queryInput;
@@ -55,7 +55,7 @@ namespace Plugins.AssetRegister.Runtime
 				return;
 			}
 			
-			_queryName = modelType.Name;
+			_queryResponseName = modelAttribute.ResponseName;
 			
 			var type = typeof(TVariables);
 			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
@@ -157,7 +157,7 @@ namespace Plugins.AssetRegister.Runtime
 			queryString.Append(string.Join(", ", _parameters.Select(p => $"${p.ParameterName}: {p.ParameterType}")));
 			queryString.AppendLine(") {");
 			
-			queryString.Append($"{_queryName}(");
+			queryString.Append($"{_queryResponseName}(");
 			queryString.Append(string.Join(", ", _parameters.Select(p => $"{p.ParameterName}: ${p.ParameterName}")));
 			queryString.AppendLine("){");
 
@@ -166,7 +166,7 @@ namespace Plugins.AssetRegister.Runtime
 			queryString.AppendLine("}");
 			queryString.Append("}");
 			
-			return new QueryObject<TModel, TVariables>(_queryName, queryString.ToString(), _queryInput);
+			return new QueryObject<TModel, TVariables>(_queryResponseName, queryString.ToString(), _queryInput);
 		}
 
 		private static void BuildFieldsStringRecursive(ref StringBuilder builder, List<FieldTreeNode> fieldNodes)

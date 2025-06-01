@@ -48,7 +48,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			}
 
 			var resultString = webRequest.downloadHandler.text;
-			return ParseResult<TModel>(resultString, query.QueryName);
+			return ParseResult<TModel>(resultString, query.QueryResponseName);
 		}
 
 		private static QueryResult<TModel> ParseResult<TModel>(string resultString, string queryName) where TModel : class, IModel

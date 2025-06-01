@@ -11,12 +11,12 @@ namespace Plugins.AssetRegister.Runtime
 	{
 		public TVariables Variables { get; private set; }
 		
-		public readonly string QueryName;
+		public readonly string QueryResponseName;
 		public readonly string QueryString;
 
-		public QueryObject(string queryName, string queryString, TVariables variables)
+		public QueryObject(string queryResponseName, string queryString, TVariables variables)
 		{
-			QueryName = queryName;
+			QueryResponseName = queryResponseName;
 			QueryString = queryString;
 			Variables = variables;
 		}
