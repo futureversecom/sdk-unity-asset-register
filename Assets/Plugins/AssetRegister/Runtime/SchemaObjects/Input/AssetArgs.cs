@@ -8,11 +8,22 @@ using Plugins.AssetRegister.Runtime.Interfaces;
 namespace Plugins.AssetRegister.Runtime.SchemaObjects
 {
 	[JsonObject]
-	public class AssetQueryVariables : IQueryVariables
+	public class AssetArgs : IArguments
 	{
 		[JsonProperty("tokenId"), QueryInputVariable(true, ScalarType.String)]
 		public string TokenId;
 		[JsonProperty("collectionId"), QueryInputVariable(true, ScalarType.CollectionId)]
 		public string CollectionId;
+
+		private AssetArgs(string collectionId, string tokenId)
+		{
+			CollectionId = collectionId;
+			TokenId = tokenId;
+		}
+
+		public static AssetArgs Create(string collectionId, string tokenId)
+		{
+			return new AssetArgs(collectionId, tokenId);
+		}
 	}
 }

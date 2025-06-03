@@ -2,13 +2,19 @@
 
 using System.Linq;
 using System.Text;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Plugins.AssetRegister.Runtime.Interfaces;
+using Plugins.AssetRegister.Runtime.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
+#if USING_UNITASK
+using System.Threading;
+using Cysharp.Threading.Tasks;
+#else 
+using System.Collections;
+using System;
+#endif
 
 namespace Plugins.AssetRegister.Runtime.Clients
 {
@@ -17,18 +23,27 @@ namespace Plugins.AssetRegister.Runtime.Clients
 		[SerializeField] private string _graphQlEndpoint;
 		[SerializeField] private string _authenticationToken;
 
-		public async UniTask<QueryResult<TModel>> Query<TModel, TInput>(
-			QueryObject<TModel, TInput> query,
+#if USING_UNITASK
+		public async UniTask<QueryResult> 
+#else
+		public IEnumerator
+#endif
+		MakeRequest(
+			GraphQLRequest request,
 			string authenticationToken = null,
-			CancellationToken cancellationToken = default)
-			where TModel : class, IModel where TInput : class, IQueryVariables
+#if USING_UNITASK
+			CancellationToken cancellationToken = default
+#else
+			Action<QueryResult> onComplete = null
+#endif
+		)
 		{
 			using var webRequest = new UnityWebRequest(_graphQlEndpoint, "POST");
 			var jsonPayload = JsonConvert.SerializeObject(
 				new
 				{
-					query = query.QueryString,
-					variables = query.Variables,
+					query = request.QueryString,
+					variables = request.Args,
 				},
 				Formatting.None
 			);
@@ -40,27 +55,41 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			webRequest.SetRequestHeader("Authorization", authToken);
 			webRequest.SetRequestHeader("Content-Type", "application/json");
 
+#if USING_UNITASK
 			await webRequest.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
+#else
+			yield return webRequest.SendWebRequest();
+#endif
 
 			if (webRequest.result != UnityWebRequest.Result.Success)
 			{
-				return new QueryResult<TModel>(null, webRequest.error);
+#if USING_UNITASK
+				return new QueryResult(null, webRequest.error);
+#else
+				onComplete?.Invoke(new QueryResult<TModel>(null, webRequest.error));
+				yield break;
+#endif
 			}
 
 			var resultString = webRequest.downloadHandler.text;
-			return ParseResult<TModel>(resultString, query.QueryResponseName);
+			var result = ParseResult(resultString);
+#if USING_UNITASK
+			return result;
+#else
+			onComplete?.Invoke(result);
+#endif
 		}
 
-		private static QueryResult<TModel> ParseResult<TModel>(string resultString, string queryName) where TModel : class, IModel
+		private static QueryResult ParseResult(string resultString)
 		{
 			var json = JsonConvert.DeserializeObject<JObject>(resultString);
-			var data = json["data"]?[queryName]?.ToObject<TModel>();
+			var data = json["data"] as JObject;
 			var errors = json["errors"]?.ToObject<Error[]>();
 			var error = errors != null ?
 				$"GraphQL query returned errors: {string.Join(", ", errors.Select(e => e.Message))}" :
 				null;
 				
-			return new QueryResult<TModel>(data, error);
+			return new QueryResult(data, error);
 		}
 	}
 }

@@ -5,11 +5,11 @@ using System;
 namespace Plugins.AssetRegister.Runtime.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
-	public class QueryModelAttribute : Attribute
+	public class GraphQLModelAttribute : Attribute
 	{
 		public readonly string ResponseName;
 
-		public QueryModelAttribute(string responseName)
+		public GraphQLModelAttribute(string responseName)
 		{
 			this.ResponseName = responseName;
 		}

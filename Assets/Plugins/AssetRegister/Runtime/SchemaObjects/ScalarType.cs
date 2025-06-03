@@ -7,5 +7,7 @@ namespace Plugins.AssetRegister.Runtime.SchemaObjects
 		NonScalar,
 		CollectionId,
 		String,
+		Url,
+		ID,
 	}
 }

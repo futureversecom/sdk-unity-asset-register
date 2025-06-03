@@ -2,7 +2,7 @@
 
 namespace Plugins.AssetRegister.Runtime.Interfaces
 {
-	public interface IQueryVariables
+	public interface IArguments
 	{
 		
 	}

@@ -6,8 +6,8 @@ using Plugins.AssetRegister.Runtime.Interfaces;
 
 namespace Plugins.AssetRegister.Runtime.SchemaObjects
 {
-	[JsonObject, QueryModel("asset")]
-	public class Asset : IModel
+	[JsonObject, GraphQLModel("asset")]
+	public class AssetModel : IModel
 	{
 		[JsonProperty("assetTree")] public AssetTree AssetTree;
 		[JsonProperty("assetType")] public AssetType AssetType;

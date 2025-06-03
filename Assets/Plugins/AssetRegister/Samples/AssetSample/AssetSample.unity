@@ -156,6 +156,7 @@ MonoBehaviour:
   _client: {fileID: 1121416453}
   _collectionId: 7672:root:303204
   _tokenId: 42
+  _namespace: https://example.com
 --- !u!114 &1121416453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _graphQlEndpoint: https://ar-api.futureverse.cloud/graphql
+  _authenticationToken: 
 --- !u!4 &1121416454
 Transform:
   m_ObjectHideFlags: 0
