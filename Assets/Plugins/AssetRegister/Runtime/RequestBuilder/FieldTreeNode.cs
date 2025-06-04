@@ -2,14 +2,14 @@
 
 using System.Collections.Generic;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
 	public class FieldTreeNode
 	{
-		public readonly string FieldName;
-		public readonly List<FieldTreeNode> Children;
+		internal readonly string FieldName;
+		internal readonly List<FieldTreeNode> Children;
 
-		public FieldTreeNode(string fieldName)
+		internal FieldTreeNode(string fieldName)
 		{
 			FieldName = fieldName;
 			Children = new List<FieldTreeNode>();

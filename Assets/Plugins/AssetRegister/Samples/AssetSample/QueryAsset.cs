@@ -1,15 +1,14 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using Plugins.AssetRegister.Runtime.Clients;
-using Plugins.AssetRegister.Runtime.Requests;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
-using Plugins.AssetRegister.Runtime.SchemaObjects.Queries;
+using AssetRegister.Runtime.Clients;
+using AssetRegister.Runtime.Objects.Models;
+using AssetRegister.Runtime.Objects.Queries;
+using AssetRegister.Runtime.RequestBuilder;
 using UnityEngine;
 #if USING_UNITASK
 using System.Threading;
 #else
 using System.Collections;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
 #endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -35,7 +34,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 				// 	.Done()
 				.Build();
 
-			var result = await _client.MakeRequest(request, cancellationToken: cancellationTokenSource.Token);
+			var result = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
 #else
 		private IEnumerator Start()
 		{
@@ -56,13 +55,13 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 #endif
 			}
 
-			if (result.TryRetrieveModel<AssetModel>(out var asset))
+			if (result.TryGetModel<AssetModel>(out var asset))
 			{
 				Debug.Log(asset.CollectionId);
 				Debug.Log(asset.TokenId);
 			}
 			
-			if (result.TryRetrieveModel<NamespaceModel>(out var @namespace))
+			if (result.TryGetModel<NamespaceModel>(out var @namespace))
 			{
 				Debug.Log(@namespace.Id);
 			}

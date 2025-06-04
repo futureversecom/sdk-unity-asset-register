@@ -4,19 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
+using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
-using Plugins.AssetRegister.Runtime.Interfaces;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
-	public class QuerySubBuilder<TModel, TArgs, TParent> : IQuerySubBuilder<TModel, TArgs, TParent, IQueryData>, IQueryData
+	internal class QuerySubBuilder<TModel, TArgs, TParent> : IQuerySubBuilder<TModel, TArgs, TParent, IQueryData>, IQueryData
 		where TModel : class, IModel
-		where TArgs : class, IArguments
+		where TArgs : class, IArgs
 		where TParent : class, IMainBuilder<TParent, IQueryData>
 	{
 		public FieldTreeNode RootNode => _rootNode;
 		public List<ParameterInfo> Parameters { get; }
-		public IArguments Args { get; private set; }
+		public IArgs Args { get; private set; }
 		
 		private readonly TParent _parent;
 		private FieldTreeNode _rootNode;
@@ -28,12 +28,12 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			Parameters = BuilderUtils.ParametersFromType<TArgs>();
 		}
 
-		public Request Build()
+		public IRequest Build()
 		{
 			return _parent.Build();
 		}
 
-		public async UniTask<Result> Execute(IAssetRegisterClient client, string authToken, CancellationToken cancellationToken)
+		public async UniTask<IResponse> Execute(IClient client, string authToken, CancellationToken cancellationToken)
 		{
 			return await _parent.Execute(client, authToken, cancellationToken);
 		}

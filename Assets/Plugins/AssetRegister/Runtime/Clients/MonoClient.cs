@@ -2,10 +2,10 @@
 
 using System.Linq;
 using System.Text;
+using AssetRegister.Runtime.Core;
+using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Plugins.AssetRegister.Runtime.Interfaces;
-using Plugins.AssetRegister.Runtime.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 #if USING_UNITASK
@@ -16,37 +16,30 @@ using System.Collections;
 using System;
 #endif
 
-namespace Plugins.AssetRegister.Runtime.Clients
+namespace AssetRegister.Runtime.Clients
 {
-	public class MonoClient : MonoBehaviour, IAssetRegisterClient
+	public sealed class MonoClient : MonoBehaviour, IClient
 	{
 		[SerializeField] private string _graphQlEndpoint;
 		[SerializeField] private string _authenticationToken;
 
 #if USING_UNITASK
-		public async UniTask<Result> 
+		public async UniTask<IResponse> 
 #else
 		public IEnumerator
 #endif
-		MakeRequest(
-			Request request,
+		SendRequest(
+			IRequest request,
 			string authenticationToken = null,
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
 #else
-			Action<QueryResult> onComplete = null
+			Action<IResponse> onComplete = null
 #endif
 		)
 		{
 			using var webRequest = new UnityWebRequest(_graphQlEndpoint, "POST");
-			var jsonPayload = JsonConvert.SerializeObject(
-				new
-				{
-					query = request.QueryString,
-					variables = request.Args,
-				},
-				Formatting.None
-			);
+			var jsonPayload = request.Serialize();
 			
 			webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
 			webRequest.downloadHandler = new DownloadHandlerBuffer();
@@ -64,7 +57,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			if (webRequest.result != UnityWebRequest.Result.Success)
 			{
 #if USING_UNITASK
-				return new Result(null, webRequest.error);
+				return new Response(null, webRequest.error);
 #else
 				onComplete?.Invoke(new QueryResult<TModel>(null, webRequest.error));
 				yield break;
@@ -72,7 +65,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			}
 
 			var resultString = webRequest.downloadHandler.text;
-			var result = Result.Parse(resultString);
+			var result = Response.Parse(resultString);
 #if USING_UNITASK
 			return result;
 #else

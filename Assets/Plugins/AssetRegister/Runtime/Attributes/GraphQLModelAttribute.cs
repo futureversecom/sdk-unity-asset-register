@@ -2,10 +2,10 @@
 
 using System;
 
-namespace Plugins.AssetRegister.Runtime.Attributes
+namespace AssetRegister.Runtime.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
-	public class GraphQLModelAttribute : Attribute
+	internal class GraphQLModelAttribute : Attribute
 	{
 		public readonly string ResponseName;
 

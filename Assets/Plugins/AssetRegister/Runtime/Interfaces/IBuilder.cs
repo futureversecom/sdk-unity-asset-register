@@ -4,22 +4,21 @@ using System;
 using System.Linq.Expressions;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Plugins.AssetRegister.Runtime.Interfaces;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IBuilder
 	{
-		Request Build();
-		UniTask<Result> Execute(IAssetRegisterClient client, string authToken, CancellationToken cancellationToken);
+		IRequest Build();
+		UniTask<IResponse> Execute(IClient client, string authToken, CancellationToken cancellationToken);
 	}
 
 	public interface ISubBuilder<TModel, in TArgs, out TBuilder, out TParentBuilder, TData> : IBuilder
 		where TModel : class, IModel 
-		where TArgs : class, IArguments
+		where TArgs : class, IArgs
 		where TBuilder : ISubBuilder<TModel, TArgs, TBuilder, TParentBuilder, TData>
 		where TParentBuilder : IMainBuilder<TParentBuilder, TData>
-		where TData : IQueryData
+		where TData : IData
 	{
 		TParentBuilder Done();
 		TBuilder WithArgs(TArgs arguments);
@@ -29,14 +28,14 @@ namespace Plugins.AssetRegister.Runtime.Requests
 	public interface IQuerySubBuilder<TModel, in TArgs, out TParentBuilder, TData>
 		: ISubBuilder<TModel, TArgs, IQuerySubBuilder<TModel, TArgs, TParentBuilder, TData>, TParentBuilder, TData>
 		where TModel : class, IModel 
-		where TArgs : class, IArguments 
+		where TArgs : class, IArgs 
 		where TParentBuilder : IMainBuilder<TParentBuilder, TData> 
 		where TData : class, IQueryData { }
 
 	public interface IMutationSubBuilder<TModel, in TArgs, out TParentBuilder, TData>
 		: ISubBuilder<TModel, TArgs, IMutationSubBuilder<TModel, TArgs, TParentBuilder, TData>, TParentBuilder, TData>
 		where TModel : class, IModel 
-		where TArgs : class, IArguments 
+		where TArgs : class, IArgs 
 		where TParentBuilder : IMainBuilder<TParentBuilder, TData> 
 		where TData : class, IMutationData
 	{
@@ -45,7 +44,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 
 	public interface IMainBuilder<out TBuilder, in TData> : IBuilder 
 		where TBuilder : IMainBuilder<TBuilder, TData> 
-		where TData : IQueryData
+		where TData : IData
 	{
 		TBuilder RegisterData(TData data);
 	}
@@ -54,13 +53,13 @@ namespace Plugins.AssetRegister.Runtime.Requests
 	{
 		IQuerySubBuilder<TModel, TArgs, IQueryBuilder, IQueryData> AddQuery<TModel, TArgs>(IQuery<TModel, TArgs> query)
 			where TModel : class, IModel 
-			where TArgs : class, IArguments;
+			where TArgs : class, IArgs;
 	}
 
 	public interface IMutationBuilder : IMainBuilder<IMutationBuilder, IMutationData>
 	{
 		IMutationSubBuilder<TModel, TArgs, IMutationBuilder, IMutationData> AddMutation<TModel, TArgs>(IMutation<TModel, TArgs> mutation)
 			where TModel : class, IModel 
-			where TArgs : class, IArguments;
+			where TArgs : class, IArgs;
 	}
 }

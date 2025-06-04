@@ -3,11 +3,11 @@
 using Newtonsoft.Json;
 using Plugins.AssetRegister.Runtime.SchemaObjects;
 
-namespace Plugins.AssetRegister.Runtime.Interfaces
+namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IQuery<out TFields, out TArguments>
 		where TFields : class, IModel
-		where TArguments : class, IArguments
+		where TArguments : class, IArgs
 	{
 		TArguments Arguments { get; }
 	}

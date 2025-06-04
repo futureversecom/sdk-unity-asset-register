@@ -4,16 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
+using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
-using Plugins.AssetRegister.Runtime.Interfaces;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
-	public class MutationSubBuilder<TModel, TArgs, TParent> : IMutationSubBuilder<TModel, TArgs, TParent, IMutationData>, IMutationData
-		where TModel : class, IModel where TArgs : class, IArguments where TParent : IMainBuilder<TParent, IMutationData>
+	internal class MutationSubBuilder<TModel, TArgs, TParent> : IMutationSubBuilder<TModel, TArgs, TParent, IMutationData>, IMutationData
+		where TModel : class, IModel where TArgs : class, IArgs where TParent : IMainBuilder<TParent, IMutationData>
 	{
 		public FieldTreeNode RootNode => _rootNode;
-		public IArguments Args { get; private set; }
+		public IArgs Args { get; private set; }
 		public string FunctionName { get; private set; }
 		public List<ParameterInfo> Parameters { get; }
 
@@ -27,14 +27,14 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			Parameters = BuilderUtils.ParametersFromType<TArgs>();
 		}
 
-		public Request Build()
+		public IRequest Build()
 		{
 			return Done()
 				.Build();
 		}
 
-		public async UniTask<Result> Execute(
-			IAssetRegisterClient client,
+		public async UniTask<IResponse> Execute(
+			IClient client,
 			string authToken = null,
 			CancellationToken cancellationToken = default)
 		{

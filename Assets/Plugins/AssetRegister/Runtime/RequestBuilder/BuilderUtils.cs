@@ -1,19 +1,18 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using AssetRegister.Runtime.Interfaces;
+using AssetRegister.Runtime.Attributes;
 using Newtonsoft.Json;
-using Plugins.AssetRegister.Runtime.Attributes;
-using Plugins.AssetRegister.Runtime.Interfaces;
 using UnityEngine;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
-	public static class BuilderUtils
+	internal static class BuilderUtils
 	{
 		private static bool TryGetParameterInfoFromField(FieldInfo field, out ParameterInfo parameterInfo)
 		{
@@ -82,7 +81,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			}
 		}
 		
-		public static string BuildModelString(IQueryData data, bool includeParams)
+		public static string BuildModelString(IData data, bool includeParams)
 		{
 			var stringBuilder = new StringBuilder();
 			BuildFieldsStringRecursive(ref stringBuilder, data.RootNode, includeParams ? data.Parameters : null);
@@ -115,7 +114,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			builder.AppendLine("}");
 		}
 		
-		public static List<ParameterInfo> ParametersFromType<TArgs>() where TArgs : IArguments
+		public static List<ParameterInfo> ParametersFromType<TArgs>() where TArgs : IArgs
 		{
 			var type = typeof(TArgs);
 			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);

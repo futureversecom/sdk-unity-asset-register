@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using AssetRegister.Runtime.Core;
+using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Plugins.AssetRegister.Runtime.Interfaces;
 using UnityEngine;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
-	public class MutationBuilder : IMutationBuilder
+	internal class MutationBuilder : IMutationBuilder
 	{
 		private readonly List<IMutationData> _mutationData = new();
 
@@ -22,13 +23,13 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		}
 
 		public IMutationSubBuilder<TModel, TArgs, IMutationBuilder, IMutationData> AddMutation<TModel, TArgs>(
-			IMutation<TModel, TArgs> mutation) where TModel : class, IModel where TArgs : class, IArguments
+			IMutation<TModel, TArgs> mutation) where TModel : class, IModel where TArgs : class, IArgs
 		{
 			return new MutationSubBuilder<TModel, TArgs, IMutationBuilder>(this).WithArgs(mutation.Arguments)
 				.WithFunctionName(mutation.FunctionName);
 		}
 		
-		public Request Build()
+		public IRequest Build()
 		{
 			var queryString = new StringBuilder();
 			queryString.Append("mutation (");
@@ -60,12 +61,12 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		}
 		
 #if USING_UNITASK
-		public async UniTask<Result> 
+		public async UniTask<IResponse> 
 #else 
 		public IEnumerator
 #endif
 			Execute(
-				IAssetRegisterClient client,
+				IClient client,
 				string authenticationToken = null,
 #if USING_UNITASK
 				CancellationToken cancellationToken = default
@@ -76,7 +77,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		{
 			var queryObject = Build();
 #if USING_UNITASK
-			return await client.MakeRequest(queryObject, authenticationToken, cancellationToken);
+			return await client.SendRequest(queryObject, authenticationToken, cancellationToken);
 #else
 			yield return client.Query(queryObject, authenticationToken, onComplete);
 #endif

@@ -1,11 +1,10 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System.Threading;
-using Plugins.AssetRegister.Runtime.Clients;
-using Plugins.AssetRegister.Runtime.Interfaces;
-using Plugins.AssetRegister.Runtime.Requests;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
-using Plugins.AssetRegister.Runtime.SchemaObjects.Mutations;
+using AssetRegister.Runtime.Clients;
+using AssetRegister.Runtime.RequestBuilder;
+using AssetRegister.Runtime.Objects.Models;
+using AssetRegister.Runtime.Objects.Mutations;
 using UnityEngine;
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -22,12 +21,12 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = new MutationBuilder()
+			var request = RequestBuilder.Mutation()
 				.AddMutation(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
 				.WithField(x => x.CollectionId)
 				.Build();
 
-			var result = await _client.MakeRequest(request, _siweToken, cancellationTokenSource.Token);
+			var response = await _client.SendRequest(request, _siweToken, cancellationTokenSource.Token);
 #else
 		private IEnumerator Start()
 		{
@@ -38,9 +37,9 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 				.Execute(_client, onComplete: r => result = r);
 #endif
 
-			if (!result.Success)
+			if (!response.Success)
 			{
-				Debug.LogError($"Errors in request: {result.Error}");
+				Debug.LogError($"Errors in request: {response.Error}");
 #if USING_UNITASK
 				return;
 #else
@@ -48,7 +47,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 #endif
 			}
 
-			if (result.TryRetrieveModel<AssetModel>(out var asset))
+			if (response.TryGetModel<AssetModel>(out var asset))
 			{
 				Debug.Log(asset.CollectionId);
 				Debug.Log(asset.TokenId);

@@ -3,10 +3,10 @@
 using System;
 using Plugins.AssetRegister.Runtime.SchemaObjects;
 
-namespace Plugins.AssetRegister.Runtime.Attributes
+namespace AssetRegister.Runtime.Attributes
 {
 	[AttributeUsage(AttributeTargets.Field)]
-	public class ArgumentVariableAttribute : Attribute
+	internal class ArgumentVariableAttribute : Attribute
 	{
 		public readonly string TypeName;
 		public readonly bool Required;

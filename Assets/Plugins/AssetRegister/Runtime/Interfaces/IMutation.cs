@@ -2,11 +2,11 @@
 
 using Plugins.AssetRegister.Runtime.SchemaObjects;
 
-namespace Plugins.AssetRegister.Runtime.Interfaces
+namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IMutation<out TFields, TArguments>
 		where TFields : class, IModel
-		where TArguments : class, IArguments
+		where TArguments : class, IArgs
 	{
 		string FunctionName { get; }
 		TArguments Arguments { get; }

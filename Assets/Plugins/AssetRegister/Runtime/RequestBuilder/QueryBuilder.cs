@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using AssetRegister.Runtime.Core;
+using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Plugins.AssetRegister.Runtime.Interfaces;
 using UnityEngine;
 
-namespace Plugins.AssetRegister.Runtime.Requests
+namespace AssetRegister.Runtime.RequestBuilder
 {
-	public class QueryBuilder : IQueryBuilder
+	internal class QueryBuilder : IQueryBuilder
 	{
 		private readonly List<IQueryData> _queryData = new();
 		
@@ -22,12 +23,12 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		}
 
 		public IQuerySubBuilder<TModel, TArgs, IQueryBuilder, IQueryData> AddQuery<TModel, TArgs>(IQuery<TModel, TArgs> query)
-			where TModel : class, IModel where TArgs : class, IArguments
+			where TModel : class, IModel where TArgs : class, IArgs
 		{
 			return new QuerySubBuilder<TModel, TArgs, IQueryBuilder>(this).WithArgs(query.Arguments);
 		}
 		
-		public Request Build()
+		public IRequest Build()
 		{
 			var queryString = new StringBuilder();
 			queryString.Append("query (");
@@ -48,12 +49,12 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		}
 		
 #if USING_UNITASK
-		public async UniTask<Result> 
+		public async UniTask<IResponse> 
 #else 
 		public IEnumerator
 #endif
 			Execute(
-				IAssetRegisterClient client,
+				IClient client,
 				string authenticationToken = null,
 #if USING_UNITASK
 				CancellationToken cancellationToken = default
@@ -64,7 +65,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		{
 			var queryObject = Build();
 #if USING_UNITASK
-			return await client.MakeRequest(queryObject, authenticationToken, cancellationToken);
+			return await client.SendRequest(queryObject, authenticationToken, cancellationToken);
 #else
 			yield return client.Query(queryObject, authenticationToken, onComplete);
 #endif
