@@ -1,6 +1,7 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using AssetRegister.Runtime.Clients;
+using AssetRegister.Runtime.Helpers;
 using AssetRegister.Runtime.Objects.Models;
 using AssetRegister.Runtime.Objects.Queries;
 using AssetRegister.Runtime.RequestBuilder;
@@ -25,22 +26,27 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = RequestBuilder.Query()
+			
+			// Option 1
+			var request = RequestBuilder.BeginQuery()
 				.Add(new AssetQuery(_collectionId, _tokenId))
 					.WithField(a => a.CollectionId)
 					.WithField(a => a.TokenId)
 					.Done()
-				// .Add(new NamespaceQuery(""))
-				// 	.WithField(n => n.Id)
-				// 	.WithField(n => n.Url)
-				// 	.Done()
 				.Build();
+			
+			var response = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
 
-			var result = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
+			// Option2
+			var response2 = await Query.Asset(_collectionId, _tokenId)
+				.WithField(a => a.CollectionId)
+				.WithField(a => a.TokenId)
+				.Execute(_client, cancellationToken: cancellationTokenSource.Token);
+
 		
-			if (!result.Success)
+			if (!response.Success)
 			{
-				Debug.LogError($"Errors in request: {result.Error}");
+				Debug.LogError($"Errors in request: {response.Error}");
 				return;
 			}
 #else
@@ -60,13 +66,13 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			}
 #endif
 			
-			if (result.TryGetModel<AssetModel>(out var asset))
+			if (response.TryGetModel<AssetModel>(out var asset))
 			{
 				Debug.Log(asset.CollectionId);
 				Debug.Log(asset.TokenId);
 			}
 			
-			if (result.TryGetModel<NamespaceModel>(out var @namespace))
+			if (response.TryGetModel<NamespaceModel>(out var @namespace))
 			{
 				Debug.Log(@namespace.Id);
 			}

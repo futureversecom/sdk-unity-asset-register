@@ -7,6 +7,8 @@ using AssetRegister.Runtime.Objects.Mutations;
 using UnityEngine;
 #if USING_UNITASK
 using System.Threading;
+using AssetRegister.Runtime.Helpers;
+
 #else
 using System.Collections;
 #endif
@@ -25,13 +27,22 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = RequestBuilder.Mutation()
+			
+			// Option 1
+			var request = RequestBuilder.BeginMutation()
 				.Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
-				.WithField(x => x.CollectionId)
+					.WithField(x => x.CollectionId)
+					.Done()
 				.Build();
 
 			var response = await _client.SendRequest(request, _siweToken, cancellationTokenSource.Token);
 		
+			// Option 2
+			var response2 = await Mutation.UpdateAssetProfile(_assetId, _key, _assetProfileUrl)
+				.WithField(x => x.CollectionId)
+				.Execute(_client, _siweToken, cancellationTokenSource.Token);
+			
+			
 			if (!response.Success)
 			{
 				Debug.LogError($"Errors in request: {response.Error}");

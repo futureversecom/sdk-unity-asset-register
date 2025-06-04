@@ -6,10 +6,10 @@ namespace AssetRegister.Runtime.RequestBuilder
 {
 	public static class RequestBuilder
 	{
-		public static IQueryBuilder Query()
+		public static IQueryBuilder BeginQuery()
 			=> new QueryBuilder();
 
-		public static IMutationBuilder Mutation()
+		public static IMutationBuilder BeginMutation()
 			=> new MutationBuilder();
 	}
 }

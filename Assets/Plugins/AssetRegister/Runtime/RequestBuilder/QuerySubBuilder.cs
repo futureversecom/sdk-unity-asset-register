@@ -41,7 +41,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 #if USING_UNITASK
 		public async UniTask<IResponse> Execute(IClient client, string authToken, CancellationToken cancellationToken)
 		{
-			return await _parent.Execute(client, authToken, cancellationToken);
+			return await Done().Execute(client, authToken, cancellationToken);
 		}
 #else
 		public IEnumerator Execute(IClient client, string authToken = null, Action<IResponse> callback = null)
