@@ -10,9 +10,9 @@ namespace Plugins.AssetRegister.Runtime.SchemaObjects
 	[JsonObject]
 	public class AssetArgs : IArguments
 	{
-		[JsonProperty("tokenId"), QueryInputVariable(true, ScalarType.String)]
+		[JsonProperty("tokenId"), ArgumentVariable(true, Scalar.String)]
 		public string TokenId;
-		[JsonProperty("collectionId"), QueryInputVariable(true, ScalarType.CollectionId)]
+		[JsonProperty("collectionId"), ArgumentVariable(true, Scalar.CollectionId)]
 		public string CollectionId;
 
 		private AssetArgs(string collectionId, string tokenId)

@@ -5,12 +5,12 @@ using Plugins.AssetRegister.Runtime.Interfaces;
 
 namespace Plugins.AssetRegister.Runtime.Requests
 {
-	public class GraphQLRequest
+	public class Request
 	{
 		public JObject Args { get; private set; }
 		public readonly string QueryString;
 
-		public GraphQLRequest(string queryString, JObject arguments)
+		public Request(string queryString, JObject arguments)
 		{
 			QueryString = queryString;
 			Args = arguments;

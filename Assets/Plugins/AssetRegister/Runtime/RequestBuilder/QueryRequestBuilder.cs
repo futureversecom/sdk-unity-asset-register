@@ -8,15 +8,15 @@ using UnityEngine;
 
 namespace Plugins.AssetRegister.Runtime.Requests
 {
-	public class MutationRequestBuilder : RequestBuilder<IMutationData>
+	public class QueryRequestBuilder : RequestBuilder<IQueryData>
 	{
-		public MutationSubBuilder<TModel, TArgs> AddMutation<TModel, TArgs>(IQuery<TModel, TArgs> query)
+		public QuerySubBuilder<TModel, TArgs> AddQuery<TModel, TArgs>(IQuery<TModel, TArgs> query)
 			where TModel : class, IModel where TArgs : class, IArguments
 		{
-			return new MutationSubBuilder<TModel, TArgs>(this).SetArgs(query.Arguments);
+			return new QuerySubBuilder<TModel, TArgs>(this).WithArgs(query.Arguments);
 		}
 		
-		public override GraphQLRequest Build()
+		public override Request Build()
 		{
 			var queryString = new StringBuilder();
 			queryString.Append("query (");
@@ -33,7 +33,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			
 			queryString.Append("}");
 			Debug.Log(queryString.ToString());
-			return new GraphQLRequest(queryString.ToString(), argsObject);
+			return new Request(queryString.ToString(), argsObject);
 		}
 	}
 }

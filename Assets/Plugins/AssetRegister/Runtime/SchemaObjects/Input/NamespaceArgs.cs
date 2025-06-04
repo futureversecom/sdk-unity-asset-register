@@ -9,7 +9,7 @@ namespace Plugins.AssetRegister.Runtime.SchemaObjects
 	[JsonObject]
 	public class NamespaceArgs : IArguments
 	{
-		[JsonProperty("namespace"), QueryInputVariable(true, ScalarType.Url)]
+		[JsonProperty("namespace"), ArgumentVariable(true, Scalar.Url)]
 		public string Namespace;
 
 		private NamespaceArgs(string @namespace)

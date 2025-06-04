@@ -24,12 +24,12 @@ namespace Plugins.AssetRegister.Runtime.Clients
 		[SerializeField] private string _authenticationToken;
 
 #if USING_UNITASK
-		public async UniTask<QueryResult> 
+		public async UniTask<Result> 
 #else
 		public IEnumerator
 #endif
 		MakeRequest(
-			GraphQLRequest request,
+			Request request,
 			string authenticationToken = null,
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
@@ -64,7 +64,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			if (webRequest.result != UnityWebRequest.Result.Success)
 			{
 #if USING_UNITASK
-				return new QueryResult(null, webRequest.error);
+				return new Result(null, webRequest.error);
 #else
 				onComplete?.Invoke(new QueryResult<TModel>(null, webRequest.error));
 				yield break;
@@ -80,7 +80,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 #endif
 		}
 
-		private static QueryResult ParseResult(string resultString)
+		private static Result ParseResult(string resultString)
 		{
 			var json = JsonConvert.DeserializeObject<JObject>(resultString);
 			var data = json["data"] as JObject;
@@ -89,7 +89,7 @@ namespace Plugins.AssetRegister.Runtime.Clients
 				$"GraphQL query returned errors: {string.Join(", ", errors.Select(e => e.Message))}" :
 				null;
 				
-			return new QueryResult(data, error);
+			return new Result(data, error);
 		}
 	}
 }

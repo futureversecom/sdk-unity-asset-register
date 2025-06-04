@@ -69,12 +69,10 @@ namespace Plugins.AssetRegister.Runtime.Requests
 				return false;
 			}
 				
-			var scalarAttribute = field.GetCustomAttribute<QueryInputVariableAttribute>();
+			var scalarAttribute = field.GetCustomAttribute<ArgumentVariableAttribute>();
 			
 			var parameterName = jsonAttribute.PropertyName;
-			var typeName = scalarAttribute == null || scalarAttribute.ScalarTypeType == ScalarType.NonScalar ?
-				field.FieldType.Name :
-				scalarAttribute.ScalarTypeType.ToString();
+			var typeName = scalarAttribute?.TypeName ?? field.FieldType.Name;
 			var required = scalarAttribute?.Required ?? false;
 
 			if (field.FieldType.IsArray)
@@ -94,13 +92,13 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			return true;
 		}
 
-		public TBuilder SetArgs(TArgs input)
+		public TBuilder WithArgs(TArgs input)
 		{
 			_arguments = input;
 			return this as TBuilder;
 		}
 
-		public TBuilder AddField<TField>(Expression<Func<TModel, TField>> fieldExpression)
+		public TBuilder WithField<TField>(Expression<Func<TModel, TField>> fieldExpression)
 		{
 			// Push to stack to get the member chain in the reverse order
 			var currentExpression = fieldExpression.Body;
@@ -136,31 +134,6 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			}
 			
 			return this as TBuilder;
-		}
-
-		public abstract GraphQLRequest Build();
-		
-#if USING_UNITASK
-		public async UniTask<QueryResult> 
-#else 
-		public IEnumerator
-#endif
-			Execute(
-			IAssetRegisterClient client,
-			string authenticationToken = null,
-#if USING_UNITASK
-			CancellationToken cancellationToken = default
-#else
-			Action<QueryResult> onComplete = null
-#endif
-			)
-		{
-			var queryObject = Build();
-#if USING_UNITASK
-			return await client.MakeRequest(queryObject, authenticationToken, cancellationToken);
-#else
-			yield return client.Query(queryObject, authenticationToken, onComplete);
-#endif
 		}
 	}
 }

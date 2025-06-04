@@ -14,12 +14,12 @@ namespace Plugins.AssetRegister.Runtime.Interfaces
 	public interface IAssetRegisterClient
 	{
 #if USING_UNITASK
-		UniTask<QueryResult>
+		UniTask<Result>
 #else
 		IEnumerator
 #endif
 		MakeRequest(
-			GraphQLRequest request,
+			Request request,
 			string authenticationToken = null,
 #if USING_UNITASK
 			CancellationToken cancellationToken = default

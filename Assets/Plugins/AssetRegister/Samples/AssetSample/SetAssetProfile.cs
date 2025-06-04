@@ -1,43 +1,33 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using Plugins.AssetRegister.Runtime;
+using System.Threading;
 using Plugins.AssetRegister.Runtime.Clients;
 using Plugins.AssetRegister.Runtime.Interfaces;
 using Plugins.AssetRegister.Runtime.Requests;
 using Plugins.AssetRegister.Runtime.SchemaObjects;
-using Plugins.AssetRegister.Runtime.SchemaObjects.Queries;
+using Plugins.AssetRegister.Runtime.SchemaObjects.Mutations;
 using UnityEngine;
-#if USING_UNITASK
-using System.Threading;
-#else
-using System.Collections;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
-#endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
 {
-	public class QueryAsset : MonoBehaviour
+	public class SetAssetProfile : MonoBehaviour
 	{
 		[SerializeField] private MonoClient _client;
-		[SerializeField] private string _collectionId;
-		[SerializeField] private string _tokenId;
-		[SerializeField] private string _namespace;
-		
+		[SerializeField] private string _assetId;
+		[SerializeField] private string _key;
+		[SerializeField] private string _assetProfileUrl;
+		[SerializeField] private string _siweToken;
+
 #if USING_UNITASK
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = new QueryRequestBuilder()
-				.AddQuery(new AssetQuery(_collectionId, _tokenId))
-					.WithField(a => a.CollectionId)
-					.WithField(a => a.TokenId)
-					.Done()
-				// .AddQuery(new NamespaceQuery(_namespace))
-				// 	.WithField(n => n.Id)
-				// 	.Done()
+			var request = new MutationRequestBuilder()
+				.AddMutation(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
+				.WithField(x => x.CollectionId)
 				.Build();
 
-			var result = await _client.MakeRequest(request, cancellationToken: cancellationTokenSource.Token);
+			var result = await _client.MakeRequest(request, _siweToken, cancellationTokenSource.Token);
 #else
 		private IEnumerator Start()
 		{
@@ -47,7 +37,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 				.AddField(x => x.Collection.ChainID)
 				.Execute(_client, onComplete: r => result = r);
 #endif
-			
+
 			if (!result.Success)
 			{
 				Debug.LogError($"Errors in request: {result.Error}");
@@ -62,11 +52,6 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			{
 				Debug.Log(asset.CollectionId);
 				Debug.Log(asset.TokenId);
-			}
-			
-			if (result.TryRetrieveModel<NamespaceModel>(out var @namespace))
-			{
-				Debug.Log(@namespace.Id);
 			}
 		}
 	}

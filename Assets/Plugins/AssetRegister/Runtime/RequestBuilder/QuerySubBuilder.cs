@@ -8,21 +8,21 @@ namespace Plugins.AssetRegister.Runtime.Requests
 		where TModel : class, IModel
 		where TVariables : class, IArguments
 	{
-		private readonly RequestBuilder<IQueryData> _parent;
+		private readonly QueryRequestBuilder _parent;
 		
-		public QuerySubBuilder(RequestBuilder<IQueryData> parent) : base()
+		public QuerySubBuilder(QueryRequestBuilder parent)
 		{
 			_parent = parent;
 		}
 
-		public RequestBuilder<IQueryData> Submit()
+		public QueryRequestBuilder Done()
 		{
-			return _parent.RegisterQuery(this);
+			return _parent.RegisterQuery(this) as QueryRequestBuilder;
 		}
 
-		public override GraphQLRequest Build()
+		public Request Build()
 		{
-			return _parent.Build();
+			return Done().Build();
 		}
 	}
 }

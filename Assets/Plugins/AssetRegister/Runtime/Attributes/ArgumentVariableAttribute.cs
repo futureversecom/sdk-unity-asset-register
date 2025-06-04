@@ -6,14 +6,14 @@ using Plugins.AssetRegister.Runtime.SchemaObjects;
 namespace Plugins.AssetRegister.Runtime.Attributes
 {
 	[AttributeUsage(AttributeTargets.Field)]
-	public class QueryInputVariableAttribute : Attribute
+	public class ArgumentVariableAttribute : Attribute
 	{
-		public readonly ScalarType ScalarTypeType;
+		public readonly string TypeName;
 		public readonly bool Required;
 
-		public QueryInputVariableAttribute(bool required = false, ScalarType scalarTypeType = ScalarType.NonScalar)
+		public ArgumentVariableAttribute(bool required = false, string typeName = null)
 		{
-			ScalarTypeType = scalarTypeType;
+			TypeName = typeName;
 			Required = required;
 		}
 	}
