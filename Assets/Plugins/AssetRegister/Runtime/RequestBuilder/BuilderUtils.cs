@@ -5,61 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Plugins.AssetRegister.Runtime.Attributes;
 using Plugins.AssetRegister.Runtime.Interfaces;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
 using UnityEngine;
-#if USING_UNITASK
-using System.Threading;
-using Cysharp.Threading.Tasks;
-#else
-using System.Collections;
-#endif
 
 namespace Plugins.AssetRegister.Runtime.Requests
 {
-	public abstract class ASubBuilder<TModel, TArgs, TBuilder>: ISubBuilder<TModel, TArgs> 
-		where TModel: class, IModel 
-		where TArgs : class, IArguments
-		where TBuilder : class, ISubBuilder<TModel, TArgs>
+	public static class BuilderUtils
 	{
-		public FieldTreeNode RootNode { get; }
-		public List<ParameterInfo> Parameters { get; } = new();
-		public IArguments Args => _arguments;
-
-		private TArgs _arguments;
-
-		protected ASubBuilder()
-		{
-			var modelType = typeof(TModel);
-			var modelAttribute = modelType.GetCustomAttribute<GraphQLModelAttribute>();
-			if (modelAttribute == null)
-			{
-				Debug.LogError("QueryBuilder error - TModel missing QueryModelAttribute");
-				return;
-			}
-			
-			var queryName = modelAttribute.ResponseName;
-			RootNode = new FieldTreeNode(queryName);
-			
-			var type = typeof(TArgs);
-			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
-
-			foreach (var member in members)
-			{
-				if (member is not FieldInfo field)
-				{
-					continue;
-				}
-
-				if (TryGetParameterInfoFromField(field, out var parameterInfo))
-				{
-					Parameters.Add(parameterInfo);
-				}
-			}
-		}
-
 		private static bool TryGetParameterInfoFromField(FieldInfo field, out ParameterInfo parameterInfo)
 		{
 			var jsonAttribute = field.GetCustomAttribute<JsonPropertyAttribute>();
@@ -92,16 +47,9 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			return true;
 		}
 
-		public TBuilder WithArgs(TArgs input)
-		{
-			_arguments = input;
-			return this as TBuilder;
-		}
-
-		public TBuilder WithField<TField>(Expression<Func<TModel, TField>> fieldExpression)
+		public static void PopulateFieldTree<TModel, TField>(Expression currentExpression, ref FieldTreeNode rootNode)
 		{
 			// Push to stack to get the member chain in the reverse order
-			var currentExpression = fieldExpression.Body;
 			var expressionStack = new Stack<MemberExpression>();
 			while (currentExpression != null && currentExpression.NodeType != ExpressionType.Parameter)
 			{
@@ -111,7 +59,7 @@ namespace Plugins.AssetRegister.Runtime.Requests
 			}
 
 			// Unwind stack and add property names to the tree
-			var currentNodes = RootNode.Children;
+			var currentNodes = rootNode.Children;
 			while (expressionStack.TryPop(out var expression))
 			{
 				var member = expression.Member;
@@ -132,8 +80,75 @@ namespace Plugins.AssetRegister.Runtime.Requests
 
 				currentNodes = existingNode.Children;
 			}
+		}
+		
+		public static string BuildModelString(IQueryData data, bool includeParams)
+		{
+			var stringBuilder = new StringBuilder();
+			BuildFieldsStringRecursive(ref stringBuilder, data.RootNode, includeParams ? data.Parameters : null);
+			return stringBuilder.ToString();
+		}
+		
+		private static void BuildFieldsStringRecursive(ref StringBuilder builder, FieldTreeNode fieldNode, List<ParameterInfo> parameters = null)
+		{
+			builder.AppendLine(fieldNode.FieldName);
+
+			if (parameters != null)
+			{
+				builder.Append("(");
+				builder.Append(
+					string.Join(",", parameters.Select(p => $"{p.ParameterName}: ${p.ParameterName}"))
+				);
+				builder.Append(")");
+			}
 			
-			return this as TBuilder;
+			if (fieldNode.Children.Count == 0)
+			{
+				return;
+			}
+
+			builder.AppendLine("{");
+			foreach (var child in fieldNode.Children)
+			{
+				BuildFieldsStringRecursive(ref builder, child);
+			}
+			builder.AppendLine("}");
+		}
+		
+		public static List<ParameterInfo> ParametersFromType<TArgs>() where TArgs : IArguments
+		{
+			var type = typeof(TArgs);
+			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
+
+			var list = new List<ParameterInfo>();
+			foreach (var member in members)
+			{
+				if (member is not FieldInfo field)
+				{
+					continue;
+				}
+
+				if (TryGetParameterInfoFromField(field, out var parameterInfo))
+				{
+					list.Add(parameterInfo);
+				}
+			}
+
+			return list;
+		}
+
+		public static FieldTreeNode RootNodeFromModel<TModel>() where TModel : IModel
+		{
+			var modelType = typeof(TModel);
+			var modelAttribute = modelType.GetCustomAttribute<GraphQLModelAttribute>();
+			if (modelAttribute == null)
+			{
+				Debug.LogError("QueryBuilder error - TModel missing QueryModelAttribute");
+				return null;
+			}
+			
+			var queryName = modelAttribute.ResponseName;
+			return new FieldTreeNode(queryName);
 		}
 	}
 }

@@ -1,8 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using Plugins.AssetRegister.Runtime;
 using Plugins.AssetRegister.Runtime.Clients;
-using Plugins.AssetRegister.Runtime.Interfaces;
 using Plugins.AssetRegister.Runtime.Requests;
 using Plugins.AssetRegister.Runtime.SchemaObjects;
 using Plugins.AssetRegister.Runtime.SchemaObjects.Queries;
@@ -27,7 +25,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = new QueryRequestBuilder()
+			var request = RequestBuilder.Query()
 				.AddQuery(new AssetQuery(_collectionId, _tokenId))
 					.WithField(a => a.CollectionId)
 					.WithField(a => a.TokenId)

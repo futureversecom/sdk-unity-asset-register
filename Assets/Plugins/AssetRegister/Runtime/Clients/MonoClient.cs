@@ -72,24 +72,12 @@ namespace Plugins.AssetRegister.Runtime.Clients
 			}
 
 			var resultString = webRequest.downloadHandler.text;
-			var result = ParseResult(resultString);
+			var result = Result.Parse(resultString);
 #if USING_UNITASK
 			return result;
 #else
 			onComplete?.Invoke(result);
 #endif
-		}
-
-		private static Result ParseResult(string resultString)
-		{
-			var json = JsonConvert.DeserializeObject<JObject>(resultString);
-			var data = json["data"] as JObject;
-			var errors = json["errors"]?.ToObject<Error[]>();
-			var error = errors != null ?
-				$"GraphQL query returned errors: {string.Join(", ", errors.Select(e => e.Message))}" :
-				null;
-				
-			return new Result(data, error);
 		}
 	}
 }

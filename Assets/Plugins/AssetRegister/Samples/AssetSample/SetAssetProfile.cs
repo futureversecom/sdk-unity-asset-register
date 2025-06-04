@@ -22,7 +22,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private async void Start()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
-			var request = new MutationRequestBuilder()
+			var request = new MutationBuilder()
 				.AddMutation(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
 				.WithField(x => x.CollectionId)
 				.Build();
