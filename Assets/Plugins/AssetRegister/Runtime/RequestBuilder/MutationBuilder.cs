@@ -1,14 +1,19 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using System.Collections.Generic;
+#if USING_UNITASK
+using Cysharp.Threading.Tasks;
+using System.Threading;
+#else
+using System;
+using System.Collections;
+#endif
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
@@ -22,7 +27,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return this;
 		}
 
-		public IMutationSubBuilder<TModel, TArgs, IMutationBuilder, IMutationData> AddMutation<TModel, TArgs>(
+		public IMutationSubBuilder<TModel, TArgs, IMutationBuilder, IMutationData> Add<TModel, TArgs>(
 			IMutation<TModel, TArgs> mutation) where TModel : class, IModel where TArgs : class, IArgs
 		{
 			return new MutationSubBuilder<TModel, TArgs, IMutationBuilder>(this).WithArgs(mutation.Arguments)
@@ -71,7 +76,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 #if USING_UNITASK
 				CancellationToken cancellationToken = default
 #else
-				Action<QueryResult> onComplete = null
+				Action<IResponse> onComplete = null
 #endif
 			)
 		{
@@ -79,7 +84,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 #if USING_UNITASK
 			return await client.SendRequest(queryObject, authenticationToken, cancellationToken);
 #else
-			yield return client.Query(queryObject, authenticationToken, onComplete);
+			yield return client.SendRequest(queryObject, authenticationToken, onComplete);
 #endif
 		}
 	}

@@ -9,6 +9,7 @@ using UnityEngine;
 using System.Threading;
 #else
 using System.Collections;
+using AssetRegister.Runtime.Interfaces;
 #endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -25,36 +26,40 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			var request = RequestBuilder.Query()
-				.AddQuery(new AssetQuery(_collectionId, _tokenId))
+				.Add(new AssetQuery(_collectionId, _tokenId))
 					.WithField(a => a.CollectionId)
 					.WithField(a => a.TokenId)
 					.Done()
-				// .AddQuery(new NamespaceQuery(_namespace))
+				// .Add(new NamespaceQuery(""))
 				// 	.WithField(n => n.Id)
+				// 	.WithField(n => n.Url)
 				// 	.Done()
 				.Build();
 
 			var result = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
+		
+			if (!result.Success)
+			{
+				Debug.LogError($"Errors in request: {result.Error}");
+				return;
+			}
 #else
 		private IEnumerator Start()
 		{
-			QueryResult<Asset> result = null;
-			yield return AssetRegisterQuery.Asset(_collectionId, _tokenId)
-				.AddField(x => x.TokenId)
-				.AddField(x => x.Collection.ChainID)
-				.Execute(_client, onComplete: r => result = r);
-#endif
+			IResponse result = null;
+			yield return RequestBuilder.Query()
+				.Add(new AssetQuery(_collectionId, _tokenId))
+				.WithField(x => x.TokenId)
+				.WithField(x => x.CollectionId)
+				.Execute(_client, callback:r => result = r);
 			
 			if (!result.Success)
 			{
 				Debug.LogError($"Errors in request: {result.Error}");
-#if USING_UNITASK
-				return;
-#else
 				yield break;
-#endif
 			}
-
+#endif
+			
 			if (result.TryGetModel<AssetModel>(out var asset))
 			{
 				Debug.Log(asset.CollectionId);

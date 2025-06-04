@@ -1,11 +1,16 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading;
 using AssetRegister.Runtime.Interfaces;
+#if USING_UNITASK
 using Cysharp.Threading.Tasks;
+using System.Threading;
+#else
+
+#endif
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
@@ -33,10 +38,17 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return _parent.Build();
 		}
 
+#if USING_UNITASK
 		public async UniTask<IResponse> Execute(IClient client, string authToken, CancellationToken cancellationToken)
 		{
 			return await _parent.Execute(client, authToken, cancellationToken);
 		}
+#else
+		public IEnumerator Execute(IClient client, string authToken = null, Action<IResponse> callback = null)
+		{
+			return Done().Execute(client, authToken, callback);
+		}
+#endif
 		
 		public TParent Done()
 		{

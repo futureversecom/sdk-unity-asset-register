@@ -1,11 +1,15 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System.Threading;
 using AssetRegister.Runtime.Clients;
 using AssetRegister.Runtime.RequestBuilder;
 using AssetRegister.Runtime.Objects.Models;
 using AssetRegister.Runtime.Objects.Mutations;
 using UnityEngine;
+#if USING_UNITASK
+using System.Threading;
+#else
+using System.Collections;
+#endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
 {
@@ -22,31 +26,33 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			var request = RequestBuilder.Mutation()
-				.AddMutation(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
+				.Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
 				.WithField(x => x.CollectionId)
 				.Build();
 
 			var response = await _client.SendRequest(request, _siweToken, cancellationTokenSource.Token);
-#else
-		private IEnumerator Start()
-		{
-			QueryResult<Asset> result = null;
-			yield return AssetRegisterQuery.Asset(_collectionId, _tokenId)
-				.AddField(x => x.TokenId)
-				.AddField(x => x.Collection.ChainID)
-				.Execute(_client, onComplete: r => result = r);
-#endif
-
+		
 			if (!response.Success)
 			{
 				Debug.LogError($"Errors in request: {response.Error}");
-#if USING_UNITASK
 				return;
-#else
-				yield break;
-#endif
 			}
-
+#else
+		private IEnumerator Start()
+		{
+			IResponse response = null;
+			yield return RequestBuilder.Mutation().Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
+				.WithField(x => x.TokenId)
+				.WithField(x => x.Collection.ChainID)
+				.Execute(_client, callback: r => response = r);
+			
+			if (!response.Success)
+			{
+				Debug.LogError($"Errors in request: {response.Error}");
+				yield break;
+			}
+#endif
+			
 			if (response.TryGetModel<AssetModel>(out var asset))
 			{
 				Debug.Log(asset.CollectionId);

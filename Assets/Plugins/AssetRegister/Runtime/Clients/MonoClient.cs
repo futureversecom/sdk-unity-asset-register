@@ -1,11 +1,8 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System.Linq;
 using System.Text;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 #if USING_UNITASK
@@ -59,7 +56,7 @@ namespace AssetRegister.Runtime.Clients
 #if USING_UNITASK
 				return new Response(null, webRequest.error);
 #else
-				onComplete?.Invoke(new QueryResult<TModel>(null, webRequest.error));
+				onComplete?.Invoke(new Response(null, webRequest.error));
 				yield break;
 #endif
 			}

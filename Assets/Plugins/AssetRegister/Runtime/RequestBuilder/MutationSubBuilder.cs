@@ -3,9 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading;
 using AssetRegister.Runtime.Interfaces;
+#if USING_UNITASK
 using Cysharp.Threading.Tasks;
+using System.Threading;
+#else
+using System.Collections;
+#endif
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
@@ -32,7 +36,13 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return Done()
 				.Build();
 		}
+		
+		public TParent Done()
+		{
+			return _parent.RegisterData(this);
+		}
 
+#if USING_UNITASK
 		public async UniTask<IResponse> Execute(
 			IClient client,
 			string authToken = null,
@@ -41,12 +51,16 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return await Done()
 				.Execute(client, authToken, cancellationToken);
 		}
-
-		public TParent Done()
+#else
+		public IEnumerator Execute(
+			IClient client,
+			string authToken = null,
+			Action<IResponse> callback = null)
 		{
-			return _parent.RegisterData(this);
+			return Done().Execute(client, authToken, callback);
 		}
-
+#endif
+		
 		public IMutationSubBuilder<TModel, TArgs, TParent, IMutationData> WithArgs(TArgs arguments)
 		{
 			Args = arguments;

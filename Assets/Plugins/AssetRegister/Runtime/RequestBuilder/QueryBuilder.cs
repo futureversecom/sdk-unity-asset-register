@@ -1,14 +1,19 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using System.Collections.Generic;
+#if USING_UNITASK
+using System.Threading;
+using Cysharp.Threading.Tasks;
+#else
+using System;
+using System.Collections;
+#endif
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
@@ -22,7 +27,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return this;
 		}
 
-		public IQuerySubBuilder<TModel, TArgs, IQueryBuilder, IQueryData> AddQuery<TModel, TArgs>(IQuery<TModel, TArgs> query)
+		public IQuerySubBuilder<TModel, TArgs, IQueryBuilder, IQueryData> Add<TModel, TArgs>(IQuery<TModel, TArgs> query)
 			where TModel : class, IModel where TArgs : class, IArgs
 		{
 			return new QuerySubBuilder<TModel, TArgs, IQueryBuilder>(this).WithArgs(query.Arguments);
@@ -59,15 +64,15 @@ namespace AssetRegister.Runtime.RequestBuilder
 #if USING_UNITASK
 				CancellationToken cancellationToken = default
 #else
-				Action<QueryResult> onComplete = null
+				Action<IResponse> onComplete = null
 #endif
 			)
 		{
-			var queryObject = Build();
+			var request = Build();
 #if USING_UNITASK
-			return await client.SendRequest(queryObject, authenticationToken, cancellationToken);
+			return await client.SendRequest(request, authenticationToken, cancellationToken);
 #else
-			yield return client.Query(queryObject, authenticationToken, onComplete);
+			yield return client.SendRequest(request, authenticationToken, onComplete);
 #endif
 		}
 	}
