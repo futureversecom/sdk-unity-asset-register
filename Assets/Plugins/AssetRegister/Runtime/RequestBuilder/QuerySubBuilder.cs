@@ -14,14 +14,14 @@ using System.Threading;
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
-	internal class QuerySubBuilder<TModel, TArgs, TParent> : IQuerySubBuilder<TModel, TArgs, TParent, IQueryData>, IQueryData
+	internal class QuerySubBuilder<TModel, TInput, TParent> : IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, IQueryData
 		where TModel : class, IModel
-		where TArgs : class, IArgs
+		where TInput : class, IInput
 		where TParent : class, IMainBuilder<TParent, IQueryData>
 	{
 		public FieldTreeNode RootNode => _rootNode;
 		public List<ParameterInfo> Parameters { get; }
-		public IArgs Args { get; private set; }
+		public IInput Input { get; private set; }
 		
 		private readonly TParent _parent;
 		private FieldTreeNode _rootNode;
@@ -30,7 +30,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 		{
 			_parent = parent;
 			_rootNode = BuilderUtils.RootNodeFromModel<TModel>();
-			Parameters = BuilderUtils.ParametersFromType<TArgs>();
+			Parameters = BuilderUtils.ParametersFromType<TInput>();
 		}
 
 		public IRequest Build()
@@ -55,13 +55,13 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return _parent.RegisterData(this);
 		}
 
-		public IQuerySubBuilder<TModel, TArgs, TParent, IQueryData> WithArgs(TArgs arguments)
+		public IQuerySubBuilder<TModel, TInput, TParent, IQueryData> WithInput(TInput arguments)
 		{
-			Args = arguments;
+			Input = arguments;
 			return this;
 		}
 
-		public IQuerySubBuilder<TModel, TArgs, TParent, IQueryData> WithField<TField>(
+		public IQuerySubBuilder<TModel, TInput, TParent, IQueryData> WithField<TField>(
 			Expression<Func<TModel, TField>> fieldExpression)
 		{
 			BuilderUtils.PopulateFieldTree<TModel, TField>(fieldExpression.Body, ref _rootNode);

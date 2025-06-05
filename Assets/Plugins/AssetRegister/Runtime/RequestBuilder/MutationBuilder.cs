@@ -27,10 +27,10 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return this;
 		}
 
-		public IMutationSubBuilder<TModel, TArgs, IMutationBuilder, IMutationData> Add<TModel, TArgs>(
-			IMutation<TModel, TArgs> mutation) where TModel : class, IModel where TArgs : class, IArgs
+		public IMutationSubBuilder<TModel, TInput, IMutationBuilder, IMutationData> Add<TModel, TInput>(
+			IMutation<TModel, TInput> mutation) where TModel : class, IModel where TInput : class, IInput
 		{
-			return new MutationSubBuilder<TModel, TArgs, IMutationBuilder>(this).WithArgs(mutation.Arguments)
+			return new MutationSubBuilder<TModel, TInput, IMutationBuilder>(this).WithInput(mutation.Arguments)
 				.WithFunctionName(mutation.FunctionName);
 		}
 		
@@ -42,7 +42,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 			queryString.Append(string.Join(", ", allParameters.Select(p => $"${p.ParameterName}: {p.ParameterType}")));
 			queryString.AppendLine(") {");
 			
-			var argsObject = new JObject();
+			var inputObject = new JObject();
 			foreach (var mutationData in _mutationData)
 			{
 				queryString.Append(mutationData.FunctionName);
@@ -57,12 +57,12 @@ namespace AssetRegister.Runtime.RequestBuilder
 				queryString.Append(BuilderUtils.BuildModelString(mutationData, false));
 				queryString.AppendLine("}");
 				
-				argsObject.Merge(JObject.FromObject(mutationData.Args));
+				inputObject.Merge(JObject.FromObject(mutationData.Input));
 			}
 			
 			queryString.Append("}");
 			Debug.Log(queryString.ToString());
-			return new Request(queryString.ToString(), argsObject);
+			return new Request(queryString.ToString(), inputObject);
 		}
 		
 #if USING_UNITASK

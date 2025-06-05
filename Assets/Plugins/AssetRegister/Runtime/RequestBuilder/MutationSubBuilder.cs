@@ -13,11 +13,11 @@ using System.Collections;
 
 namespace AssetRegister.Runtime.RequestBuilder
 {
-	internal class MutationSubBuilder<TModel, TArgs, TParent> : IMutationSubBuilder<TModel, TArgs, TParent, IMutationData>, IMutationData
-		where TModel : class, IModel where TArgs : class, IArgs where TParent : IMainBuilder<TParent, IMutationData>
+	internal class MutationSubBuilder<TModel, TInput, TParent> : IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, IMutationData
+		where TModel : class, IModel where TInput : class, IInput where TParent : IMainBuilder<TParent, IMutationData>
 	{
 		public FieldTreeNode RootNode => _rootNode;
-		public IArgs Args { get; private set; }
+		public IInput Input { get; private set; }
 		public string FunctionName { get; private set; }
 		public List<ParameterInfo> Parameters { get; }
 
@@ -28,7 +28,7 @@ namespace AssetRegister.Runtime.RequestBuilder
 		{
 			_parent = parent;
 			_rootNode = BuilderUtils.RootNodeFromModel<TModel>();
-			Parameters = BuilderUtils.ParametersFromType<TArgs>();
+			Parameters = BuilderUtils.ParametersFromType<TInput>();
 		}
 
 		public IRequest Build()
@@ -61,20 +61,20 @@ namespace AssetRegister.Runtime.RequestBuilder
 		}
 #endif
 		
-		public IMutationSubBuilder<TModel, TArgs, TParent, IMutationData> WithArgs(TArgs arguments)
+		public IMutationSubBuilder<TModel, TInput, TParent, IMutationData> WithInput(TInput arguments)
 		{
-			Args = arguments;
+			Input = arguments;
 			return this;
 		}
 
-		public IMutationSubBuilder<TModel, TArgs, TParent, IMutationData> WithField<TField>(
+		public IMutationSubBuilder<TModel, TInput, TParent, IMutationData> WithField<TField>(
 			Expression<Func<TModel, TField>> fieldExpression)
 		{
 			BuilderUtils.PopulateFieldTree<TModel, TField>(fieldExpression.Body, ref _rootNode);
 			return this;
 		}
 		
-		public IMutationSubBuilder<TModel, TArgs, TParent, IMutationData> WithFunctionName(string functionName)
+		public IMutationSubBuilder<TModel, TInput, TParent, IMutationData> WithFunctionName(string functionName)
 		{
 			FunctionName = functionName;
 			return this;

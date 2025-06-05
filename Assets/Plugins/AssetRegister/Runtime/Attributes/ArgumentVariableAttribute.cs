@@ -1,7 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
 
 namespace AssetRegister.Runtime.Attributes
 {

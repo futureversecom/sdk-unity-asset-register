@@ -114,9 +114,9 @@ namespace AssetRegister.Runtime.RequestBuilder
 			builder.AppendLine("}");
 		}
 		
-		public static List<ParameterInfo> ParametersFromType<TArgs>() where TArgs : IArgs
+		public static List<ParameterInfo> ParametersFromType<TInput>() where TInput : IInput
 		{
-			var type = typeof(TArgs);
+			var type = typeof(TInput);
 			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
 
 			var list = new List<ParameterInfo>();

@@ -9,7 +9,7 @@ namespace AssetRegister.Runtime.Interfaces
 	{
 		FieldTreeNode RootNode { get; }
 		List<ParameterInfo> Parameters { get; }
-		IArgs Args { get; }
+		IInput Input { get; }
 	}
 
 	public interface IQueryData : IData

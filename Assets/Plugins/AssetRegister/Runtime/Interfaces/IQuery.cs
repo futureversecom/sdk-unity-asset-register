@@ -4,7 +4,7 @@ namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IQuery<out TFields, out TArguments>
 		where TFields : class, IModel
-		where TArguments : class, IArgs
+		where TArguments : class, IInput
 	{
 		TArguments Arguments { get; }
 	}

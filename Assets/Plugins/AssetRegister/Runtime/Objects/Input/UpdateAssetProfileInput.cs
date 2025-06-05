@@ -4,17 +4,17 @@ using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Attributes;
 using Newtonsoft.Json;
 
-namespace AssetRegister.Runtime.Objects.Args
+namespace AssetRegister.Runtime.Objects.Input
 {
 	[JsonObject]
-	public sealed class UpdateAssetProfileArgs : IArgs
+	public sealed class UpdateAssetProfileInput : IInput
 	{
 		[JsonProperty("updateAssetProfile_input"), ArgumentVariable(true, "UpdateAssetProfileInput")]
-		public InnerArgs Input;
+		public UpdateAssetProfileInnerInput Input;
 
-		private UpdateAssetProfileArgs(string assetId, string key, string url)
+		private UpdateAssetProfileInput(string assetId, string key, string url)
 		{
-			Input = new InnerArgs()
+			Input = new UpdateAssetProfileInnerInput()
 			{
 				AssetId = assetId,
 				Key = key,
@@ -22,14 +22,14 @@ namespace AssetRegister.Runtime.Objects.Args
 			};
 		}
 
-		public static UpdateAssetProfileArgs Create(string assetId, string key, string url)
+		public static UpdateAssetProfileInput Create(string assetId, string key, string url)
 		{
-			return new UpdateAssetProfileArgs(assetId, key, url);
+			return new UpdateAssetProfileInput(assetId, key, url);
 		}
 	}
 
 	[JsonObject]
-	public class InnerArgs
+	public class UpdateAssetProfileInnerInput
 	{
 		[JsonProperty("assetId")]
 		public string AssetId;

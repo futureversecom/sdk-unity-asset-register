@@ -27,10 +27,10 @@ namespace AssetRegister.Runtime.RequestBuilder
 			return this;
 		}
 
-		public IQuerySubBuilder<TModel, TArgs, IQueryBuilder, IQueryData> Add<TModel, TArgs>(IQuery<TModel, TArgs> query)
-			where TModel : class, IModel where TArgs : class, IArgs
+		public IQuerySubBuilder<TModel, TInput, IQueryBuilder, IQueryData> Add<TModel, TInput>(IQuery<TModel, TInput> query)
+			where TModel : class, IModel where TInput : class, IInput
 		{
-			return new QuerySubBuilder<TModel, TArgs, IQueryBuilder>(this).WithArgs(query.Arguments);
+			return new QuerySubBuilder<TModel, TInput, IQueryBuilder>(this).WithInput(query.Arguments);
 		}
 		
 		public IRequest Build()
@@ -41,16 +41,16 @@ namespace AssetRegister.Runtime.RequestBuilder
 			queryString.Append(string.Join(", ", allParameters.Select(p => $"${p.ParameterName}: {p.ParameterType}")));
 			queryString.AppendLine(") {");
 
-			var argsObject = new JObject();
+			var inputObject = new JObject();
 			foreach (var queryData in _queryData)
 			{
 				queryString.Append(BuilderUtils.BuildModelString(queryData, true));
-				argsObject.Merge(JObject.FromObject(queryData.Args));
+				inputObject.Merge(JObject.FromObject(queryData.Input));
 			}
 			
 			queryString.Append("}");
 			Debug.Log(queryString.ToString());
-			return new Request(queryString.ToString(), argsObject);
+			return new Request(queryString.ToString(), inputObject);
 		}
 		
 #if USING_UNITASK

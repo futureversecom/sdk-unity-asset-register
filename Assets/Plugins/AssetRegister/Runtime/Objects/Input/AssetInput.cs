@@ -3,27 +3,26 @@
 using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
 
-namespace AssetRegister.Runtime.Objects.Args
+namespace AssetRegister.Runtime.Objects.Input
 {
 	[JsonObject]
-	public sealed class AssetArgs : IArgs
+	public sealed class AssetInput : IInput
 	{
 		[JsonProperty("tokenId"), ArgumentVariable(true, Scalar.String)]
 		public string TokenId;
 		[JsonProperty("collectionId"), ArgumentVariable(true, Scalar.CollectionId)]
 		public string CollectionId;
 
-		private AssetArgs(string collectionId, string tokenId)
+		private AssetInput(string collectionId, string tokenId)
 		{
 			CollectionId = collectionId;
 			TokenId = tokenId;
 		}
 
-		public static AssetArgs Create(string collectionId, string tokenId)
+		public static AssetInput Create(string collectionId, string tokenId)
 		{
-			return new AssetArgs(collectionId, tokenId);
+			return new AssetInput(collectionId, tokenId);
 		}
 	}
 }

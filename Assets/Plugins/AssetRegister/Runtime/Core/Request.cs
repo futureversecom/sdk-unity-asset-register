@@ -8,18 +8,18 @@ namespace AssetRegister.Runtime.Core
 {
 	internal class Request : IRequest
 	{
-		private readonly JObject _args;
+		private readonly JObject _input;
 		private readonly string _queryString;
 
 		public Request(string queryString, JObject arguments)
 		{
 			_queryString = queryString;
-			_args = arguments;
+			_input = arguments;
 		}
 
-		public void OverrideArguments<T>(T arguments) where T : class, IArgs
+		public void OverrideArguments<T>(T arguments) where T : class, IInput
 		{
-			_args.Merge(JObject.FromObject(arguments));
+			_input.Merge(JObject.FromObject(arguments));
 		}
 
 		public override string ToString()
@@ -31,7 +31,7 @@ namespace AssetRegister.Runtime.Core
 				new
 				{
 					query = _queryString,
-					variables = _args,
+					variables = _input,
 				},
 				Formatting.None
 			);

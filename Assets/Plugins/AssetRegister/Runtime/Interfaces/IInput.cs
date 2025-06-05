@@ -2,7 +2,7 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IArgs
+	public interface IInput
 	{
 		
 	}

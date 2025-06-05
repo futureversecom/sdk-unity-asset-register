@@ -3,24 +3,23 @@
 using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Attributes;
 using Newtonsoft.Json;
-using Plugins.AssetRegister.Runtime.SchemaObjects;
 
-namespace AssetRegister.Runtime.Objects.Args
+namespace AssetRegister.Runtime.Objects.Input
 {
 	[JsonObject]
-	public sealed class NamespaceArgs : IArgs
+	public sealed class NamespaceInput : IInput
 	{
 		[JsonProperty("namespace"), ArgumentVariable(true, Scalar.Url)]
 		public string Namespace;
 
-		private NamespaceArgs(string @namespace)
+		private NamespaceInput(string @namespace)
 		{
 			Namespace = @namespace;
 		}
 
-		public static NamespaceArgs Create(string @namespace)
+		public static NamespaceInput Create(string @namespace)
 		{
-			return new NamespaceArgs(@namespace);
+			return new NamespaceInput(@namespace);
 		}
 	}
 }

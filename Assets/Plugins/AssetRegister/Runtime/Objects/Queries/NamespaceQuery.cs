@@ -1,18 +1,18 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using AssetRegister.Runtime.Interfaces;
-using AssetRegister.Runtime.Objects.Args;
+using AssetRegister.Runtime.Objects.Input;
 using AssetRegister.Runtime.Objects.Models;
 
 namespace AssetRegister.Runtime.Objects.Queries
 {
-	public sealed class NamespaceQuery : IQuery<NamespaceModel, NamespaceArgs>
+	public sealed class NamespaceQuery : IQuery<NamespaceModel, NamespaceInput>
 	{
-		public NamespaceArgs Arguments { get; }
+		public NamespaceInput Arguments { get; }
 
 		public NamespaceQuery(string @namespace)
 		{
-			Arguments = NamespaceArgs.Create(@namespace);
+			Arguments = NamespaceInput.Create(@namespace);
 		}
 
 		public NamespaceQuery()

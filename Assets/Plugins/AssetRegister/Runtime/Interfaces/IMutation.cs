@@ -4,7 +4,7 @@ namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IMutation<out TFields, TArguments>
 		where TFields : class, IModel
-		where TArguments : class, IArgs
+		where TArguments : class, IInput
 	{
 		string FunctionName { get; }
 		TArguments Arguments { get; }
