@@ -73,7 +73,18 @@ namespace AssetRegister.Runtime.RequestBuilder
 			BuilderUtils.PopulateFieldTree<TModel, TField>(fieldExpression.Body, ref _rootNode);
 			return this;
 		}
-		
+
+		public IUnionBuilder<
+			UnionBuilder<IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TField, TModel, TInput,
+				IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TParent, IMutationData>,
+			IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TField, TModel, TInput,
+			IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TParent, IMutationData> WithUnionField<TField>(
+			Expression<Func<TModel, TField>> fieldExpression) where TField : IUnion
+		{
+			return new UnionBuilder<IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TField, TModel, TInput,
+				IMutationSubBuilder<TModel, TInput, TParent, IMutationData>, TParent, IMutationData>(this);
+		}
+
 		public IMutationSubBuilder<TModel, TInput, TParent, IMutationData> WithFunctionName(string functionName)
 		{
 			FunctionName = functionName;

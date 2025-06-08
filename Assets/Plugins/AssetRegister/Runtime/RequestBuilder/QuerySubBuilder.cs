@@ -67,5 +67,16 @@ namespace AssetRegister.Runtime.RequestBuilder
 			BuilderUtils.PopulateFieldTree<TModel, TField>(fieldExpression.Body, ref _rootNode);
 			return this;
 		}
+
+		public IUnionBuilder<
+			UnionBuilder<IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TField, TModel, TInput,
+				IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TParent, IQueryData>,
+			IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TField, TModel, TInput,
+			IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TParent, IQueryData> WithUnionField<TField>(
+			Expression<Func<TModel, TField>> fieldExpression) where TField : IUnion
+		{
+			return new UnionBuilder<IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TField, TModel, TInput,
+				IQuerySubBuilder<TModel, TInput, TParent, IQueryData>, TParent, IQueryData>(this);
+		}
 	}
 }

@@ -8,6 +8,8 @@ using AssetRegister.Runtime.RequestBuilder;
 using UnityEngine;
 #if USING_UNITASK
 using System.Threading;
+using AssetRegister.Runtime.Objects.Unions.AssetOwnership;
+
 #else
 using System.Collections;
 using AssetRegister.Runtime.Interfaces;
@@ -30,7 +32,10 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			// Option 1
 			var request = RequestBuilder.BeginQuery()
 				.Add(new AssetQuery(_collectionId, _tokenId))
-					.WithField(a => a.CollectionId)
+					.WithUnionField(a => a.Ownership)
+						.As((SFTAssetOwnership sft) => sft.Id)
+						.As((NFTAssetOwnership nft) => nft.Id)
+						.Done()
 					.WithField(a => a.TokenId)
 					.Done()
 				.Build();
