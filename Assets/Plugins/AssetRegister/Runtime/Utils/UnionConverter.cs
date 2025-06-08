@@ -9,47 +9,67 @@ using Newtonsoft.Json.Linq;
 
 namespace Plugins.AssetRegister.Runtime.Utils
 {
-	public class UnionConverter<TUnion> : JsonConverter where TUnion : IUnion
-	{
-		private static readonly Dictionary<string, Type> s_typeMap = new();
+	public class UnionConverter : JsonConverter
+    {
+        private static readonly Dictionary<Type, Dictionary<string, Type>> s_typeMaps = new();
 
-		static UnionConverter()
-		{
-			var unionBaseType = typeof(TUnion);
-			var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
-				.SelectMany(asm => asm.GetTypes())
-				.Where(t => unionBaseType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
-				.ToList();
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(IUnion).IsAssignableFrom(objectType);
+        }
 
-			foreach (var type in derivedTypes)
-			{
-				var typeName = type.Name;
-				s_typeMap[typeName] = type;
-			}
-		}
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (!typeof(IUnion).IsAssignableFrom(objectType))
+            {
+                throw new JsonSerializationException($"{objectType.Name} must implement IUnion to be used with UnionConverter.");
+            }
 
-		public override bool CanConvert(Type objectType)
-		{
-			return typeof(TUnion).IsAssignableFrom(objectType);
-		}
+            var jo = JObject.Load(reader);
+            var typeName = jo["__typename"]?.ToString();
 
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-		{
-			var jo = JObject.Load(reader);
-			var typeName = jo["__typename"]?.ToString();
+            if (string.IsNullOrEmpty(typeName))
+            {
+                throw new JsonSerializationException("Missing '__typename' field for union deserialization.");
+            }
 
-			if (typeName == null)
-				throw new JsonException("Missing '__typename' field for union deserialization.");
+            if (!s_typeMaps.TryGetValue(objectType, out var typeMap))
+            {
+                typeMap = CreateTypeMap(objectType);
+                s_typeMaps[objectType] = typeMap;
+            }
 
-			if (!s_typeMap.TryGetValue(typeName, out var targetType))
-				throw new JsonException($"Unknown __typename '{typeName}' for union type '{typeof(TUnion).Name}'.");
+            if (!typeMap.TryGetValue(typeName, out var targetType))
+            {
+                throw new JsonSerializationException($"Unknown __typename '{typeName}' for union type '{objectType.Name}'.");
+            }
 
-			return jo.ToObject(targetType, serializer)!;
-		}
+            return jo.ToObject(targetType, serializer)!;
+        }
 
-		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-		{
-			serializer.Serialize(writer, value);
-		}
-	}
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
+        }
+
+        private static Dictionary<string, Type> CreateTypeMap(Type baseType)
+        {
+            var derivedTypes = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .Where(t =>
+                    baseType.IsAssignableFrom(t)
+                    && !t.IsAbstract
+                    && !t.IsInterface)
+                .ToList();
+
+            var map = new Dictionary<string, Type>();
+            foreach (var type in derivedTypes)
+            {
+                map[type.Name] = type;
+            }
+
+            return map;
+        }
+    }
 }

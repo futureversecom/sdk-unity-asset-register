@@ -7,6 +7,7 @@ using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Plugins.AssetRegister.Runtime.Utils;
 
 namespace AssetRegister.Runtime.Core
 {
@@ -44,15 +45,8 @@ namespace AssetRegister.Runtime.Core
 				return false;
 			}
 
-			var type = typeof(T);
-			var modelAttribute = type.GetCustomAttribute<GraphQLModelAttribute>();
-			if (modelAttribute == null)
-			{
-				model = default(T);
-				return false;
-			}
-
-			var token = FindToken(modelAttribute.ResponseName);
+			var name = Utils.GetSchemaName<T>();
+			var token = FindToken(name);
 			if (token == null)
 			{
 				model = default(T);
@@ -62,6 +56,7 @@ namespace AssetRegister.Runtime.Core
 			model = token.ToObject<T>();
 			return model != null;
 		}
+		
 
 		// This is a hacky way to do it. For mutations, the model object lives under the mutation object,
 		// so it's not at the top level. That means we can't grab it off the top the same way we could do

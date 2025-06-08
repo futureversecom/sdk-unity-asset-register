@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq.Expressions;
-using AssetRegister.Runtime.RequestBuilder;
 #if USING_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
@@ -15,80 +14,44 @@ namespace AssetRegister.Runtime.Interfaces
 	public interface IBuilder
 	{
 		IRequest Build();
-#if USING_UNITASK
-		UniTask<IResponse> Execute(IClient client, string authToken = null, CancellationToken cancellationToken = default);
-#else
-		IEnumerator Execute(IClient client, string authToken = null, Action<IResponse> callback = null);
-#endif
+		UniTask<IResponse> Execute(
+			IClient client,
+			string authToken = null,
+			CancellationToken cancellationToken = default);
 	}
 
-	public interface ISubBuilder<TModel, TInput, TBuilder, TParentBuilder, TData> : IBuilder
-		where TModel : class, IModel 
-		where TInput : class, IInput
-		where TBuilder : ISubBuilder<TModel, TInput, TBuilder, TParentBuilder, TData>
-		where TParentBuilder : IMainBuilder<TParentBuilder, TData>
-		where TData : IData
+	public interface ISubBuilder<out TBuilder> : IBuilder where TBuilder : IBuilder
 	{
-		TParentBuilder Done();
-		TBuilder WithInput(TInput arguments);
-		TBuilder WithField<TField>(Expression<Func<TModel, TField>> fieldExpression);
-
-		IUnionBuilder<UnionBuilder<TBuilder, TField, TModel, TInput, TBuilder, TParentBuilder, TData>, TBuilder, TField,
-			TModel, TInput, TBuilder, TParentBuilder, TData> WithUnionField<TField>(
-			Expression<Func<TModel, TField>> fieldExpression) where TField : IUnion;
+		TBuilder Done();
 	}
 
-	public interface IQuerySubBuilder<TModel, TInput, TParentBuilder, TData>
-		: ISubBuilder<TModel, TInput, IQuerySubBuilder<TModel, TInput, TParentBuilder, TData>, TParentBuilder, TData>
-		where TModel : class, IModel 
-		where TInput : class, IInput 
-		where TParentBuilder : IMainBuilder<TParentBuilder, TData> 
-		where TData : class, IQueryData { }
-
-	public interface IMutationSubBuilder<TModel, TInput, TParentBuilder, TData>
-		: ISubBuilder<TModel, TInput, IMutationSubBuilder<TModel, TInput, TParentBuilder, TData>, TParentBuilder, TData>
-		where TModel : class, IModel 
-		where TInput : class, IInput 
-		where TParentBuilder : IMainBuilder<TParentBuilder, TData> 
-		where TData : class, IMutationData
+	public interface IQueryBuilder : IBuilder
 	{
-		IMutationSubBuilder<TModel, TInput, TParentBuilder, TData> WithFunctionName(string functionName);
+		IQuerySubBuilder<IQueryBuilder, TSchema> Add<TSchema, TInput>(IQuery<TSchema, TInput> query)
+			where TSchema : class, IModel where TInput : class, IInput;
 	}
 
-	public interface IMainBuilder<out TBuilder, in TData> : IBuilder 
-		where TBuilder : IMainBuilder<TBuilder, TData> 
-		where TData : IData
+	public interface IQuerySubBuilder<out TBuilder, TSchema> : ISubBuilder<TBuilder>
+		where TBuilder : IBuilder where TSchema : class, ISchema
 	{
-		TBuilder RegisterData(TData data);
+		IQuerySubBuilder<TBuilder, TSchema> WithField<TField>(Expression<Func<TSchema, TField>> fieldSelector);
+		//IQuerySubBuilder<TBuilder, TModel> WithFragment(Fragment<TModel> fragment);
+		IUnionSubBuilder<IQuerySubBuilder<TBuilder, TSchema>, TField> WithUnion<TField>(
+			Expression<Func<TSchema, TField>> fieldSelector) where TField : class, IUnion;
+		IInterfaceSubBuilder<IQuerySubBuilder<TBuilder, TSchema>, TField> WithInterface<TField>(
+			Expression<Func<TSchema, TField>> fieldExpression) where TField : IInterface;
 	}
 
-	public interface IQueryBuilder : IMainBuilder<IQueryBuilder, IQueryData>
+	public interface IUnionSubBuilder<out TBuilder, in TUnion> : ISubBuilder<TBuilder> where TBuilder : IBuilder where TUnion : class, IUnion
 	{
-		IQuerySubBuilder<TModel, TInput, IQueryBuilder, IQueryData> Add<TModel, TInput>(IQuery<TModel, TInput> query)
-			where TModel : class, IModel 
-			where TInput : class, IInput;
+		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> As<TUnionType>()
+			where TUnionType : class, TUnion;
 	}
-
-	public interface IMutationBuilder : IMainBuilder<IMutationBuilder, IMutationData>
+	
+	public interface IInterfaceSubBuilder<out TBuilder, TInterface> : ISubBuilder<TBuilder> where TBuilder : IBuilder where TInterface : IInterface
 	{
-		IMutationSubBuilder<TModel, TInput, IMutationBuilder, IMutationData> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
-			where TModel : class, IModel 
-			where TInput : class, IInput;
-	}
-
-	public interface IUnionBuilder<out TUnionBuilder, out TSubBuilder, in TUnion, TModel, TInput, TBuilder, TParentBuilder, TData>
-		where TUnionBuilder : IUnionBuilder<TUnionBuilder, TSubBuilder, TUnion, TModel, TInput, TBuilder, TParentBuilder, TData>
-		where TSubBuilder : ISubBuilder<TModel, TInput, TBuilder, TParentBuilder, TData>
-		where TUnion : IUnion
-		where TModel : class, IModel
-		where TInput : class, IInput
-		where TBuilder : ISubBuilder<TModel, TInput, TBuilder, TParentBuilder, TData>
-		where TParentBuilder : IMainBuilder<TParentBuilder, TData>
-		where TData : IData
-	{
-		TSubBuilder Done();
-
-		TUnionBuilder As<TField, TUnionType>(Expression<Func<TUnionType, TField>> fieldExpression)
-			where TUnionType : TUnion;
+		public IQuerySubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType> As<TInterfaceType>()
+			where TInterfaceType : class, IInterface;
+		IInterfaceSubBuilder<TBuilder, TInterface> WithField<TField>(Expression<Func<TInterface, TField>> fieldExpression);
 	}
 }
