@@ -31,7 +31,7 @@ namespace AssetRegister.Runtime.Builder
 	{
 		private readonly List<IToken> _tokens = new();
 		private readonly List<IParameter> _parameters = new();
-		private readonly List<IInput> _inputs = new();
+		private readonly List<object> _inputs = new();
 
 		public IRequest Build()
 		{
@@ -102,7 +102,7 @@ namespace AssetRegister.Runtime.Builder
 			_parameters.Add(parameter);
 		}
 
-		public void RegisterInput(IInput input)
+		public void RegisterInput(object input)
 		{
 			_inputs.Add(input);
 		}

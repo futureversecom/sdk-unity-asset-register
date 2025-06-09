@@ -6,6 +6,6 @@ namespace AssetRegister.Runtime.Interfaces
 	{
 		void RegisterToken(IToken token);
 		void RegisterParameter(IParameter parameter);
-		void RegisterInput(IInput input);
+		void RegisterInput(object input);
 	}
 }

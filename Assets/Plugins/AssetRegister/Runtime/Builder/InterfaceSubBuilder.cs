@@ -48,7 +48,7 @@ namespace AssetRegister.Runtime.Builder
 			_parentBuilder.RegisterParameter(parameter);
 		}
 
-		public void RegisterInput(IInput input)
+		public void RegisterInput(object input)
 		{
 			_parentBuilder.RegisterInput(input);
 		}

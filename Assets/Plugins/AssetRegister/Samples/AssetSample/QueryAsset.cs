@@ -7,7 +7,7 @@ using AssetRegister.Runtime.Schema.Queries;
 using UnityEngine;
 #if USING_UNITASK
 using System.Threading;
-
+using AssetRegister.Runtime.Schema.Unions;
 #else
 using System.Collections;
 using AssetRegister.Runtime.Interfaces;
@@ -21,6 +21,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		[SerializeField] private string _collectionId;
 		[SerializeField] private string _tokenId;
 		[SerializeField] private string _namespace;
+		[SerializeField] private string _address;
 		
 #if USING_UNITASK
 		private async void Start()
@@ -30,14 +31,17 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			// Option 1
 			var request = new QueryBuilder()
 				.Add(new AssetQuery(_collectionId, _tokenId))
-				// 	.WithUnionField(a => a.Ownership)
-				// 		.As((SFTAssetOwnership sft) => sft.Id)
-				// 		.As((NFTAssetOwnership nft) => nft.Id)
-				// 		.Done()
+					.WithUnion(a => a.Ownership)
+						.On<NFTAssetOwnership>()
+							.WithField(nft => nft.Owner.Handle)
+							.Done()
+						.On<SFTAssetOwnership>()
+							.WithField(sft => sft.balanceOf(_address).Balance)
+							.Done()
+						.Done()
 					.WithField(a => a.TokenId)
-				// 	.Done()
 				.Build();
-
+	
 			var response = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
 		
 			if (!response.Success)
@@ -64,8 +68,11 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			
 			if (response.TryGetModel<Asset>(out var asset))
 			{
-				Debug.Log(asset.CollectionId);
 				Debug.Log(asset.TokenId);
+				if (asset.Ownership is SFTAssetOwnership ownership)
+				{
+					Debug.Log(ownership.BalanceOf.Balance);
+				}
 			}
 			
 			if (response.TryGetModel<Namespace>(out var @namespace))

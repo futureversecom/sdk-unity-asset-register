@@ -44,7 +44,7 @@ namespace AssetRegister.Runtime.Interfaces
 
 	public interface IUnionSubBuilder<out TBuilder, in TUnion> : ISubBuilder<TBuilder> where TBuilder : IBuilder where TUnion : class, IUnion
 	{
-		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> As<TUnionType>()
+		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
 			where TUnionType : class, TUnion;
 	}
 	

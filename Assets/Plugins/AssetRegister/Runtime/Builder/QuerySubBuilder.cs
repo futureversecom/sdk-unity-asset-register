@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
+using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -26,11 +27,16 @@ namespace AssetRegister.Runtime.Builder
 			_parentBuilder = parentBuilder;
 			
 			var queryName = Utils.GetSchemaName<TSchema>();
-			var queryParameters = parameters == null || parameters.Count == 0 ?
-				null :
-				string.Join(", ", parameters.Select(p => $"{p.ParameterName}: ${p.ParameterName}"));
-			var queryString = $"{queryName} ({queryParameters})";
-			
+			var queryString = queryName;
+			if (parameters != null && parameters.Count > 0)
+			{
+				var queryParameters = string.Join(
+					", ",
+					parameters.Select(p => $"{p.ParameterName}: ${p.ParameterName}")
+				);
+				queryString = $"{queryName} ({queryParameters})";
+			}
+
 			_fieldTreeBuilder = new FieldTreeBuilder(queryString);
 		}
 
@@ -90,20 +96,64 @@ namespace AssetRegister.Runtime.Builder
 			path ??= new Stack<string>();
 			while (expression != null && expression.NodeType != ExpressionType.Parameter)
 			{
-				// TODO: Handle functions
-				var memberExpression = (MemberExpression)expression;
-				var member = memberExpression.Member;
-			
-				var jsonProperty = member.GetCustomAttribute<JsonPropertyAttribute>();
-				if (jsonProperty == null)
+				switch (expression)
 				{
-					break;
-				}
+					case MemberExpression memberExpression:
+						var member = memberExpression.Member;
 
-				var name = jsonProperty.PropertyName;
-				path.Push(name);
-				
-				expression = memberExpression.Expression;
+						var jsonProperty = member.GetCustomAttribute<JsonPropertyAttribute>();
+						if (jsonProperty == null)
+						{
+							break;
+						}
+
+						var name = jsonProperty.PropertyName;
+						path.Push(name);
+
+						expression = memberExpression.Expression;
+						break;
+					case MethodCallExpression methodCallExpression:
+						var method = methodCallExpression.Method;
+						var parameters = method.GetParameters();
+						var inputObject = new Dictionary<string, object>();
+						var allParams = new List<ParameterInfo>();
+						
+						for (var i = 0; i < methodCallExpression.Arguments.Count; i++)
+						{
+							var argExpr = methodCallExpression.Arguments[i];
+							var paramInfo = parameters[i];
+
+							var attribute = paramInfo.GetCustomAttribute<GraphQLTypeAttribute>();
+							var requiredAttribute = paramInfo.GetCustomAttribute<RequiredAttribute>();
+							var parameterTypeName =
+								attribute == null ? paramInfo.ParameterType.Name : attribute.TypeName;
+							if (paramInfo.ParameterType.IsArray)
+							{
+								parameterTypeName = $"[{parameterTypeName}]";
+							}
+							if (requiredAttribute != null)
+							{
+								parameterTypeName += "!";
+							}
+							var parameterName = paramInfo.Name;
+								
+							var value = Utils.GetValueFromExpression(argExpr);
+							
+							inputObject.Add(parameterName, value);
+							var parameter = new ParameterInfo(parameterName, parameterTypeName);
+							allParams.Add(parameter);
+							RegisterParameter(parameter);
+						}
+						
+						RegisterInput(inputObject);
+						var parameterString = string.Join(
+							", ",
+							allParams.Select(p => $"{p.ParameterName}: ${p.ParameterName}")
+						);
+						path.Push($"{method.Name} ({parameterString})");
+						expression = methodCallExpression.Object;
+						break;
+				}
 			}
 			
 			_fieldTreeBuilder.WithPath(path);
@@ -114,7 +164,7 @@ namespace AssetRegister.Runtime.Builder
 			_parentBuilder.RegisterParameter(parameter);
 		}
 
-		public void RegisterInput(IInput input)
+		public void RegisterInput(object input)
 		{
 			_parentBuilder.RegisterInput(input);
 		}

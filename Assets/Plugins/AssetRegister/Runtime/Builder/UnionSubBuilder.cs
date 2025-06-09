@@ -18,6 +18,7 @@ namespace AssetRegister.Runtime.Builder
 		public UnionSubBuilder(TBuilder parentBuilder)
 		{
 			_parentBuilder = parentBuilder;
+			_stringBuilder.AppendLine("__typename"); // Must include typename for unions for deserialization purposes
 		}
 		
 		public TBuilder Done()
@@ -26,13 +27,13 @@ namespace AssetRegister.Runtime.Builder
 			return _parentBuilder;
 		}
 
-		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> As<TUnionType>()
+		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
 			where TUnionType : class, TUnion
 		{
 			_storedSubclassName = typeof(TUnionType).Name;
 			return new QuerySubBuilder<UnionSubBuilder<TBuilder, TUnion>, TUnionType>(this);
 		}
-
+		
 		public IRequest Build()
 		{
 			return Done().Build();
@@ -48,10 +49,8 @@ namespace AssetRegister.Runtime.Builder
 
 		public void RegisterToken(IToken token)
 		{
-			_stringBuilder.AppendLine($"... on {_storedSubclassName} {{");
-			_stringBuilder.AppendLine("__typename"); // Must include typename for unions for deserialization purposes
+			_stringBuilder.AppendLine($"... on {_storedSubclassName}");
 			_stringBuilder.Append(token.Serialize());
-			_stringBuilder.Append("}");
 		}
 
 		public void RegisterParameter(IParameter parameter)
@@ -59,7 +58,7 @@ namespace AssetRegister.Runtime.Builder
 			_parentBuilder.RegisterParameter(parameter);
 		}
 
-		public void RegisterInput(IInput input)
+		public void RegisterInput(object input)
 		{
 			_parentBuilder.RegisterInput(input);
 		}
