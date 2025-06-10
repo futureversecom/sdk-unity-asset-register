@@ -3,17 +3,23 @@
 using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
+using Newtonsoft.Json;
 
 namespace AssetRegister.Runtime.Schema.Mutations
 {
-	public sealed class UpdateAssetProfileMutation : IMutation<Asset, UpdateAssetProfileInput>
+	[JsonObject("updateAssetProfile")]
+	public class UpdateAssetProfile : IModel
 	{
-		public string FunctionName => "updateAssetProfile";
-		public UpdateAssetProfileInput Arguments { get; }
+		[JsonProperty("asset")] public Asset Asset;
+	}
+	
+	public sealed class UpdateAssetProfileMutation : IMutation<UpdateAssetProfile, UpdateAssetProfileInput>
+	{
+		public UpdateAssetProfileInput Input { get; }
 
 		public UpdateAssetProfileMutation(string assetId, string key, string url)
 		{ 
-			Arguments = UpdateAssetProfileInput.Create(assetId, key, url);
+			Input = UpdateAssetProfileInput.Create(assetId, key, url);
 		}
 	}
 }

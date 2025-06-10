@@ -29,7 +29,7 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			var cancellationTokenSource = new CancellationTokenSource();
 			
 			// Option 1
-			var request = new QueryBuilder()
+			var request = Runtime.AssetRegister.NewQuery()
 				.Add(new AssetQuery(_collectionId, _tokenId))
 					.WithField(a => a.TokenId)
 					.WithField(a => a.Collection.ChainID)

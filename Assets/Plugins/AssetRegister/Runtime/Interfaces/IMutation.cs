@@ -2,11 +2,10 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IMutation<out TFields, out TInput>
-		where TFields : class, IModel
+	public interface IMutation<out TModel, out TInput>
+		where TModel : IModel
 		where TInput : class, IInput
 	{
-		string FunctionName { get; }
-		TInput Arguments { get; }
+		TInput Input { get; }
 	}
 }

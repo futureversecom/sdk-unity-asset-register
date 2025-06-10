@@ -2,8 +2,8 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IQuery<out TFields, out TInput>
-		where TFields : IModel
+	public interface IQuery<out TModel, out TInput>
+		where TModel : IModel
 		where TInput : class, IInput
 	{
 		TInput Input { get; }

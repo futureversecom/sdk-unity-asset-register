@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 1121416454}
   - component: {fileID: 1121416453}
   - component: {fileID: 1121416452}
+  - component: {fileID: 1121416455}
   m_Layer: 0
   m_Name: AssetQuery
   m_TagString: Untagged
@@ -148,7 +149,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1121416451}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 214e4bfaeb9f40f4a2dc4376ba6dc700, type: 3}
   m_Name: 
@@ -187,6 +188,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1121416455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121416451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9aae1206504e97912b80690a5d0722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _client: {fileID: 1121416453}
+  _assetId: 11155111:evm:0x85225575aae6e8275e3d2be9e86268f916f3e2be:400
+  _key: asset-profile
+  _assetProfileUrl: https://dq7a7vxun94d0.cloudfront.net/Genesis/Profiles/1.0/0x85225575aAE6e8275e3D2Be9e86268F916F3e2Be/profile.json
+  _siweToken: dHgtc2VydmljZS1hdXRoLWdlbi52ZXJjZWwuYXBwIHdhbnRzIHlvdSB0byBzaWduIGluIHdpdGggeW91ciBFdGhlcmV1bSBhY2NvdW50OgoweDg0MjY1ZTVEMzIwMTkyMTNiMEJmOTM3MWEwQzA4YTQzMDE3YzZiYjAKCgpVUkk6IGh0dHBzOi8vdHgtc2VydmljZS1hdXRoLWdlbi52ZXJjZWwuYXBwClZlcnNpb246IDEKQ2hhaW4gSUQ6IDEKTm9uY2U6IGljNnhoUXEwVFg5bjI5aFNGCklzc3VlZCBBdDogMjAyNS0wNS0yMlQwMzoxMDoyMS45NDRaCkV4cGlyYXRpb24gVGltZTogMjAyNi0wNS0yMlQwMzoxMDoyMS45NDNa.MHgwOTk1NGMyY2Q3NTI1YWRjYzhlMGFiY2Y2YmYxNmEwOGQ0YmFjYmMxYWM3ZDRhYTMzNDE2NWJiZjFkNGIwYzFjM2NjZmM4MWNlZDVkNDdkNjZlMThhZTQ4YWM0YTZiYWE0N2ZkZDNhZGE2MTQ2MGVjYWM0MzE1Mjc1MzcyMmU3NTFi
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

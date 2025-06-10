@@ -16,7 +16,7 @@ namespace AssetRegister.Runtime.Builder
 		where TBuilder : IBuilder
 	{
 		public List<IProvider> Children { get; } = new();
-		public string TokenString { get; protected set; }
+		public string TokenString { get; }
 		
 		private readonly TBuilder _parentBuilder;
 
@@ -94,11 +94,6 @@ namespace AssetRegister.Runtime.Builder
 				}
 				
 				var member = memberExpression.Member; 
-				
-				// if (typeof(IUnion).IsAssignableFrom(member.DeclaringType))
-				// {
-				// 	throw new ArgumentException("Used .WithField() with Union member. Use WithUnion instead");
-				// }
 				
 				var jsonProperty = member.GetCustomAttribute<JsonPropertyAttribute>();
 				var name = jsonProperty?.PropertyName ?? member.Name;

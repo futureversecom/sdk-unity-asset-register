@@ -14,7 +14,7 @@ namespace AssetRegister.Runtime.Schema.Unions
 	}
 
 	[JsonObject]
-	public class SFTAssetOwnership : AssetOwnership
+	public sealed class SFTAssetOwnership : AssetOwnership
 	{
 		// ReSharper disable once InconsistentNaming
 		public SFTBalance balanceOf([ChainAddress, Required] string address)
@@ -27,7 +27,7 @@ namespace AssetRegister.Runtime.Schema.Unions
 	}
 	
 	[JsonObject]
-	public class NFTAssetOwnership : AssetOwnership
+	public sealed class NFTAssetOwnership : AssetOwnership
 	{
 		[JsonProperty("owner")] public Account Owner;
 	}

@@ -59,6 +59,19 @@ namespace AssetRegister.Runtime.Builder
             TBuilder parentBuilder,
             IQuery<TModel, TInput> query) where TModel : IModel where TInput : class, IInput
         {
+            return From<TModel, TInput>(parentBuilder, query.Input);
+        }
+        
+        public static MethodSubBuilder<TBuilder, TModel> FromMutation<TModel, TInput>(
+            TBuilder parentBuilder,
+            IMutation<TModel, TInput> mutation) where TModel : IModel where TInput : class, IInput
+        {
+            return From<TModel, TInput>(parentBuilder, mutation.Input);
+        }
+
+        private static MethodSubBuilder<TBuilder, TModel> From<TModel, TInput>(TBuilder parentBuilder, TInput input) 
+            where TModel : IModel where TInput : class, IInput
+        {
             var inputType = typeof(TInput);
             var fields = inputType.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var parameterList = new List<IParameter>();
@@ -69,13 +82,13 @@ namespace AssetRegister.Runtime.Builder
                 parameterList.Add(parameter);
             }
 
-            var queryName = Utils.GetSchemaName<TModel>();
-            var token = BuildTokenString(queryName, parameterList);
+            var mutationName = Utils.GetSchemaName<TModel>();
+            var token = BuildTokenString(mutationName, parameterList);
             return new MethodSubBuilder<TBuilder, TModel>(
                 parentBuilder,
                 token,
                 parameterList,
-                query.Input
+                input
             );
         }
 
@@ -119,8 +132,18 @@ namespace AssetRegister.Runtime.Builder
 
         private static string BuildTokenString(string methodName, List<IParameter> parameters)
         {
-            var args = string.Join(", ", parameters.Select(p => $"{p.ParameterName}: ${p.ParameterName}"));
+            var args = string.Join(", ", parameters.Select(GetParameterString));
             return $"{methodName} ({args})";
+        }
+
+        private static string GetParameterString(IParameter parameter)
+        {
+            var name = parameter.ParameterName;
+            if (name.EndsWith("_input"))
+            {
+                name = "input";
+            }
+            return $"{name}: ${parameter.ParameterName}";
         }
     }
 }

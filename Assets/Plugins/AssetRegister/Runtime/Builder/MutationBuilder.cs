@@ -1,21 +1,14 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Plugins.AssetRegister.Runtime.Utils;
-using UnityEngine;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class QueryBuilder : RequestBuilder, IQueryBuilder
+	internal class MutationBuilder: RequestBuilder, IMutationBuilder
 	{
-		protected override RequestType RequestType => RequestType.Query;
+		protected override RequestType RequestType => RequestType.Mutation;
 		
 		public IRequest Build()
 			=> BuildRequest();
@@ -23,10 +16,10 @@ namespace AssetRegister.Runtime.Builder
 		public UniTask<IResponse> Execute(IClient client, string authToken = null, CancellationToken cancellationToken = default)
 			=> throw new System.NotImplementedException();
 
-		public IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
+		public IMemberSubBuilder<IMutationBuilder, TModel> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
 			where TModel : IModel where TInput : class, IInput
 		{
-			var builder = MethodSubBuilder<QueryBuilder, TModel>.FromQuery(this, query);
+			var builder = MethodSubBuilder<MutationBuilder, TModel>.FromMutation(this, mutation);
 			Providers.Add(builder);
 			return builder;
 		}
