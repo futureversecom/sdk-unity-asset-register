@@ -12,29 +12,29 @@ namespace AssetRegister.Runtime.Core
 		public Dictionary<string, string> Headers { get; }
 		
 		private readonly JObject _input;
-		private readonly string _queryString;
+		private readonly string _queryBody;
 
-		public Request(string queryString, JObject arguments, Dictionary<string, string> headers)
+		public Request(string queryBody, JObject arguments, Dictionary<string, string> headers)
 		{
-			_queryString = queryString;
+			_queryBody = queryBody;
 			_input = arguments;
 			Headers = headers;
 		}
 
-		public void OverrideArguments<T>(T arguments) where T : class, IInput
+		public void OverrideArguments<TInput>(TInput input) where TInput : class, IInput
 		{
-			_input.Merge(JObject.FromObject(arguments));
+			_input.Merge(JObject.FromObject(input));
 		}
 
 		public override string ToString()
-			=> _queryString;
+			=> _queryBody;
 
 		public string Serialize()
 		{
 			return JsonConvert.SerializeObject(
 				new
 				{
-					query = _queryString,
+					query = _queryBody,
 					variables = _input,
 				},
 				Formatting.None

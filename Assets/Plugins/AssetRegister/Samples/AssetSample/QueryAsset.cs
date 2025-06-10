@@ -14,16 +14,41 @@ using AssetRegister.Runtime.Interfaces;
 
 namespace Plugins.AssetRegister.Samples.AssetSample
 {
+	#if UNITY_EDITOR
+	using UnityEditor;
+
+	[CustomEditor(typeof(QueryAsset))]
+	public class QueryAssetEditor : Editor
+	{
+		public override void OnInspectorGUI()
+		{
+			base.OnInspectorGUI();
+			
+			EditorGUILayout.Space(8f);
+			if (GUILayout.Button("Run Query"))
+			{
+				if (target is QueryAsset queryAsset)
+				{
+					#if USING_UNITASK
+					queryAsset.RunQuery();
+					#else
+					queryAsset.StartCoroutine(queryAsset.RunQuery());
+					#endif
+				}
+			}
+		}
+	}
+	#endif
+	
 	public class QueryAsset : MonoBehaviour
 	{
 		[SerializeField] private MonoClient _client;
 		[SerializeField] private string _collectionId;
 		[SerializeField] private string _tokenId;
-		[SerializeField] private string _namespace;
 		[SerializeField] private string _address;
 		
 #if USING_UNITASK
-		private async void Start()
+		public async void RunQuery()
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			
@@ -40,17 +65,20 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 							.WithMethod(sft => sft.balanceOf(_address))
 								.WithField(b => b.Balance)
 				.Build();
+
+			Debug.Log("Sending GraphQL Query");
 	
 			var response = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);
-		
 			if (!response.Success)
 			{
 				Debug.LogError($"Errors in request: {response.Error}");
 				return;
 			}
 #else
-		private IEnumerator Start()
+		public IEnumerator RunQuery()
 		{
+			Debug.Log("Sending GraphQL Query");
+			
 			IResponse response = null;
 			yield return Runtime.AssetRegister.NewQuery()
 				.Add(new AssetQuery(_collectionId, _tokenId))
@@ -74,10 +102,10 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			
 			if (response.TryGetModel<Asset>(out var asset))
 			{
-				Debug.Log(asset.TokenId);
+				Debug.Log($"Asset Token ID is {asset.TokenId}");
 				if (asset.Ownership is SFTAssetOwnership ownership)
 				{
-					Debug.Log(ownership.BalanceOf.Balance);
+					Debug.Log($"Ownership is SFTAssetOwnership, balanceOf is {ownership.BalanceOf.Balance}");
 				}
 			}
 		}

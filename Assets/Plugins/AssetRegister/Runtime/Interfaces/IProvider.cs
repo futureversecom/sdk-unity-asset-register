@@ -4,22 +4,22 @@ using System.Collections.Generic;
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IProvider
+	internal interface IProvider
 	{
 		List<IProvider> Children { get; }
 	}
 
-	public interface ITokenProvider : IProvider
+	internal interface ITokenProvider : IProvider
 	{
 		string TokenString { get; }
 	}
 	
-	public interface IInputProvider : IProvider
+	internal interface IInputProvider : IProvider
 	{
 		IInput Input { get; }
 	}
 	
-	public interface IParameterProvider : IProvider
+	internal interface IParameterProvider : IProvider
 	{
 		List<IParameter> Parameters { get; }
 	}

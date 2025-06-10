@@ -10,11 +10,26 @@ using System.Collections;
 
 namespace AssetRegister.Runtime.Interfaces
 {
+	/// <summary>
+	/// Responsible for sending the GraphQL http request based on an IRequest object
+	/// </summary>
 	public interface IClient
 	{
 #if USING_UNITASK
+		/// <summary>
+		/// Sends the http request and produces a response
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns>The response object</returns>
 		UniTask<IResponse>
 #else
+		/// <summary>
+		/// Sends the http request and produces a response
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="callback">Callback containing the response object</param>
+		/// <returns>The IEnumerator to yield on</returns>
 		IEnumerator
 #endif
 		SendRequest(
@@ -22,7 +37,7 @@ namespace AssetRegister.Runtime.Interfaces
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
 #else
-			Action<IResponse> onComplete = null
+			Action<IResponse> callback = null
 #endif
 		);
 	}

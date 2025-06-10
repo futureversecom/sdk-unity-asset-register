@@ -56,10 +56,7 @@ namespace AssetRegister.Runtime.Builder
 			query.Append(queryBody);
 			query.Append("}");
 			
-			var queryString = query.ToString();
-			Debug.Log(queryString);
-			
-			return new Request(queryString, inputObject, _headers);
+			return new Request(query.ToString(), inputObject, _headers);
 		}
 		
 #if USING_UNITASK

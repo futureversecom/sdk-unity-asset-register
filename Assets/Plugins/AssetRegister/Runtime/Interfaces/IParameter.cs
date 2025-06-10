@@ -2,7 +2,7 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IParameter
+	internal interface IParameter
 	{
 		string ParameterName { get; }
 		string ParameterType { get; }

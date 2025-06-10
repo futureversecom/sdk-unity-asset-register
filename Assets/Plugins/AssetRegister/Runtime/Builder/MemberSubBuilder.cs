@@ -81,12 +81,6 @@ namespace AssetRegister.Runtime.Builder
 			return builder;
 		}
 
-		public IInterfaceSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithInterface<TField>(
-			Expression<Func<TType, TField>> fieldSelector) where TField : IInterface
-		{
-			throw new NotImplementedException("Interfaces are currently unsupported");
-		}
-
 		private IProvider ProcessPath(Expression expression)
 		{
 			var stack = new Stack<string>();

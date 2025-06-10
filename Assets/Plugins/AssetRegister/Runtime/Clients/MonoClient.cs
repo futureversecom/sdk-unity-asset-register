@@ -29,7 +29,7 @@ namespace AssetRegister.Runtime.Clients
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
 #else
-			Action<IResponse> onComplete = null
+			Action<IResponse> callback = null
 #endif
 		)
 		{
@@ -54,7 +54,7 @@ namespace AssetRegister.Runtime.Clients
 #if USING_UNITASK
 				return new Response(null, webRequest.error);
 #else
-				onComplete?.Invoke(new Response(null, webRequest.error));
+				callback?.Invoke(new Response(null, webRequest.error));
 				yield break;
 #endif
 			}
@@ -64,7 +64,7 @@ namespace AssetRegister.Runtime.Clients
 #if USING_UNITASK
 			return response;
 #else
-			onComplete?.Invoke(response);
+			callback?.Invoke(response);
 #endif
 		}
 	}
