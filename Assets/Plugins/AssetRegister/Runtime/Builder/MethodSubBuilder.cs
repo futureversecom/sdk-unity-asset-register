@@ -11,7 +11,7 @@ using Plugins.AssetRegister.Runtime.Utils;
 
 namespace AssetRegister.Runtime.Builder
 {
-    public class MethodSubBuilder<TBuilder, TType>
+    internal class MethodSubBuilder<TBuilder, TType>
         : MemberSubBuilder<TBuilder, TType>, IParameterProvider, IInputProvider where TBuilder : IBuilder
     {
         public List<IParameter> Parameters { get; }

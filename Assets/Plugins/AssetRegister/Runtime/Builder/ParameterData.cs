@@ -4,7 +4,7 @@ using AssetRegister.Runtime.Interfaces;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class ParameterData : IParameter
+	internal class ParameterData : IParameter
 	{
 		public string ParameterName { get; }
 		public string ParameterType { get; }

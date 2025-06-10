@@ -5,7 +5,7 @@ using System;
 namespace AssetRegister.Runtime.Attributes
 {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter)]
-	public class RequiredAttribute : Attribute
+	internal class RequiredAttribute : Attribute
 	{
 		
 	}

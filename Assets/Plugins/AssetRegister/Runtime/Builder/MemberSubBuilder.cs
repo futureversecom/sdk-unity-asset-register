@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class MemberSubBuilder<TBuilder, TType> : IMemberSubBuilder<TBuilder, TType>, ITokenProvider
+	internal class MemberSubBuilder<TBuilder, TType> : IMemberSubBuilder<TBuilder, TType>, ITokenProvider
 		where TBuilder : IBuilder
 	{
 		public List<IProvider> Children { get; } = new();

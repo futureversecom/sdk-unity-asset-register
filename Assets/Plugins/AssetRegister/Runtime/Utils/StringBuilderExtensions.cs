@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Plugins.AssetRegister.Runtime.Utils
 {
-	public static class StringBuilderExtensions
+	internal static class StringBuilderExtensions
 	{
 		public static StringBuilder AppendIndented(this StringBuilder builder, string text, int indent)
 		{

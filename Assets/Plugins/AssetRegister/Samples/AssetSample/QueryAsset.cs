@@ -1,6 +1,5 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using AssetRegister.Runtime.Builder;
 using AssetRegister.Runtime.Clients;
 using AssetRegister.Runtime.Schema.Objects;
 using AssetRegister.Runtime.Schema.Queries;
@@ -10,7 +9,6 @@ using System.Threading;
 using AssetRegister.Runtime.Schema.Unions;
 #else
 using System.Collections;
-using AssetRegister.Runtime.Interfaces;
 #endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -73,11 +71,6 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 				{
 					Debug.Log(ownership.BalanceOf.Balance);
 				}
-			}
-			
-			if (response.TryGetModel<Namespace>(out var @namespace))
-			{
-				Debug.Log(@namespace.Id);
 			}
 		}
 	}

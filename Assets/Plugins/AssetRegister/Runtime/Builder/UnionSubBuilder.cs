@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class UnionSubBuilder<TBuilder, TUnion> : IUnionSubBuilder<TBuilder, TUnion>, ITokenProvider
+	internal class UnionSubBuilder<TBuilder, TUnion> : IUnionSubBuilder<TBuilder, TUnion>, ITokenProvider
 		where TBuilder : IBuilder 
 		where TUnion : class, IUnion
 	{

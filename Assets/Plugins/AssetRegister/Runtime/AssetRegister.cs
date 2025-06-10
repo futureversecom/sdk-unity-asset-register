@@ -5,7 +5,7 @@ using AssetRegister.Runtime.Interfaces;
 
 namespace Plugins.AssetRegister.Runtime
 {
-	public class AssetRegister
+	public static class AssetRegister
 	{
 		public static IQueryBuilder NewQuery()
 		{

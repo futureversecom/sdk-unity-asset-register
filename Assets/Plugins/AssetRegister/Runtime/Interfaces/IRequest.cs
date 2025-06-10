@@ -5,5 +5,6 @@ namespace AssetRegister.Runtime.Interfaces
 	public interface IRequest
 	{
 		string Serialize();
+		void OverrideArguments<T>(T arguments) where T : class, IInput;
 	}
 }

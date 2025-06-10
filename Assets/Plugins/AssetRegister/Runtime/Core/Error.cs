@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace AssetRegister.Runtime.Core
 {
 	[JsonObject]
-	public class Error
+	internal class Error
 	{
 		[JsonProperty("message")] public string Message { get; private set; }
 	}

@@ -3,13 +3,12 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 
 namespace Plugins.AssetRegister.Runtime.Utils
 {
-	public static class Utils
+	internal static class Utils
 	{
 		public static string GetSchemaName<TSchema>() where TSchema : ISchema
 		{

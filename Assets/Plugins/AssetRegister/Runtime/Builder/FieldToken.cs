@@ -5,7 +5,7 @@ using AssetRegister.Runtime.Interfaces;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class FieldToken : ITokenProvider
+	internal class FieldToken : ITokenProvider
 	{
 		public List<IProvider> Children { get; } = new();
 		public string TokenString { get; }

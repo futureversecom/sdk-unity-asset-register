@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Plugins.AssetRegister.Runtime.Utils
 {
-	public class UnionConverter : JsonConverter
+	internal class UnionConverter : JsonConverter
     {
         private static readonly Dictionary<Type, Dictionary<string, Type>> s_typeMaps = new();
 
