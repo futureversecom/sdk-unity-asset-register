@@ -1,6 +1,7 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 #if USING_UNITASK
 using Cysharp.Threading.Tasks;
@@ -27,31 +28,58 @@ namespace AssetRegister.Runtime.Interfaces
 
 	public interface IQueryBuilder : IBuilder
 	{
-		IQuerySubBuilder<IQueryBuilder, TSchema> Add<TSchema, TInput>(IQuery<TSchema, TInput> query)
-			where TSchema : class, IModel where TInput : class, IInput;
+		IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
+			where TModel : IModel where TInput : class, IInput;
 	}
 
-	public interface IQuerySubBuilder<out TBuilder, TSchema> : ISubBuilder<TBuilder>
-		where TBuilder : IBuilder where TSchema : class, ISchema
+	public interface IMemberSubBuilder<out TBuilder, TType> : ISubBuilder<TBuilder>
+		where TBuilder : IBuilder
 	{
-		IQuerySubBuilder<TBuilder, TSchema> WithField<TField>(Expression<Func<TSchema, TField>> fieldSelector);
-		//IQuerySubBuilder<TBuilder, TModel> WithFragment(Fragment<TModel> fragment);
-		IUnionSubBuilder<IQuerySubBuilder<TBuilder, TSchema>, TField> WithUnion<TField>(
-			Expression<Func<TSchema, TField>> fieldSelector) where TField : class, IUnion;
-		IInterfaceSubBuilder<IQuerySubBuilder<TBuilder, TSchema>, TField> WithInterface<TField>(
-			Expression<Func<TSchema, TField>> fieldExpression) where TField : IInterface;
+		IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector);
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> fieldSelector);
+		IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithUnion<TField>(
+			Expression<Func<TType, TField>> fieldSelector) where TField : class, IUnion;
+		IInterfaceSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithInterface<TField>(
+			Expression<Func<TType, TField>> fieldExpression) where TField : IInterface;
 	}
 
-	public interface IUnionSubBuilder<out TBuilder, in TUnion> : ISubBuilder<TBuilder> where TBuilder : IBuilder where TUnion : class, IUnion
+	public interface IUnionSubBuilder<out TBuilder, in TUnion> : ISubBuilder<TBuilder>
+		where TBuilder : IBuilder where TUnion : class, IUnion
 	{
-		public IQuerySubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
+		public IMemberSubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
 			where TUnionType : class, TUnion;
 	}
-	
-	public interface IInterfaceSubBuilder<out TBuilder, TInterface> : ISubBuilder<TBuilder> where TBuilder : IBuilder where TInterface : IInterface
+
+	public interface IInterfaceSubBuilder<out TBuilder, TInterface> : IMemberSubBuilder<TBuilder, TInterface>
+		where TBuilder : IBuilder where TInterface : IInterface
 	{
-		public IQuerySubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType> As<TInterfaceType>()
-			where TInterfaceType : class, IInterface;
-		IInterfaceSubBuilder<TBuilder, TInterface> WithField<TField>(Expression<Func<TInterface, TField>> fieldExpression);
+		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType> On<TInterfaceType>()
+			where TInterfaceType : IInterface;
+	}
+
+	public interface IProvider
+	{
+		List<IProvider> Children { get; }
+	}
+
+	public interface ITokenProvider : IProvider
+	{
+		string TokenString { get; }
+	}
+	
+	public interface IInputProvider : IProvider
+	{
+		IInput Input { get; }
+	}
+	
+	public interface IParameterProvider : IProvider
+	{
+		List<IParameter> Parameters { get; }
+	}
+	
+	public interface IParameter
+	{
+		string ParameterName { get; }
+		string ParameterType { get; }
 	}
 }

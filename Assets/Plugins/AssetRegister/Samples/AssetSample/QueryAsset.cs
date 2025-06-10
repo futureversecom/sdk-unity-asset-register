@@ -36,10 +36,13 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 							.WithField(nft => nft.Owner.Handle)
 							.Done()
 						.On<SFTAssetOwnership>()
-							.WithField(sft => sft.balanceOf(_address).Balance)
+							.WithMethod(sft => sft.balanceOf(_address))
+								.WithField(b => b.Balance)
+								.Done()
 							.Done()
 						.Done()
 					.WithField(a => a.TokenId)
+					.WithField(a => a.Collection.ChainID)
 				.Build();
 	
 			var response = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);

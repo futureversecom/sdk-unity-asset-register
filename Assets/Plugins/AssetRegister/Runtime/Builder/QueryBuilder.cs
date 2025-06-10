@@ -2,15 +2,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
-using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Plugins.AssetRegister.Runtime.Utils;
 using UnityEngine;
 
 namespace AssetRegister.Runtime.Builder
@@ -27,84 +25,98 @@ namespace AssetRegister.Runtime.Builder
 		}
 	}
 	
-	public class QueryBuilder : IQueryBuilder, IQueryAssembler
+	public class QueryBuilder : IQueryBuilder
 	{
-		private readonly List<IToken> _tokens = new();
-		private readonly List<IParameter> _parameters = new();
-		private readonly List<object> _inputs = new();
+		private readonly List<IProvider> _providers = new();
 
 		public IRequest Build()
 		{
-			var stringBuilder = new StringBuilder();
-			stringBuilder.Append("query (");
-			stringBuilder.Append(string.Join(", ", _parameters.Select(p => $"${p.ParameterName}: {p.ParameterType}")));
-			stringBuilder.AppendLine(") {");
-			foreach (var token in _tokens)
+			var queryBody = new StringBuilder();
+			var inputObject = new JObject();
+			List<IParameter> parameters = new();
+			foreach (var provider in _providers)
 			{
-				stringBuilder.Append(token.Serialize());
+				BuildQueryStringRecursive(provider, queryBody, parameters, inputObject, 1);
 			}
-			stringBuilder.Append("}");
-			var queryString = stringBuilder.ToString();
+
+			var query = new StringBuilder();
+			query.Append("query (");
+			query.AppendJoin(", ", parameters.Select(p => $"${p.ParameterName}: {p.ParameterType}"));
+			query.AppendLine(") {");
+			query.Append(queryBody);
+			query.Append("}");
+			
+			var queryString = query.ToString();
 			Debug.Log(queryString);
 			
-			var inputObject = new JObject();
-			foreach (var input in _inputs)
-			{
-				inputObject.Merge(JObject.FromObject(input));
-			}
-			
 			return new Request(queryString, inputObject);
+		}
+
+		private static void BuildQueryStringRecursive(
+			IProvider provider,
+			StringBuilder queryBody,
+			List<IParameter> parameters,
+			JObject inputObject, 
+			int depth)
+		{
+			var isToken = false;
+			var hasChildren = provider.Children != null && provider.Children.Count > 0;
+			
+			if (provider is ITokenProvider tokenProvider)
+			{
+				isToken = true;
+				if (hasChildren)
+				{
+					queryBody.AppendLineIndented($"{tokenProvider.TokenString} {{", depth);
+				}
+				else
+				{
+					queryBody.AppendLineIndented(tokenProvider.TokenString, depth);
+				}
+			}
+			if (provider is IParameterProvider parameterProvider)
+			{
+				foreach (var param in parameterProvider.Parameters)
+				{
+					parameters.Add(param);
+				}
+			}
+			if (provider is IInputProvider inputProvider && inputProvider.Input != null)
+			{
+				inputObject.Merge(JObject.FromObject(inputProvider.Input));
+			}
+
+			if (!hasChildren)
+			{
+				return;
+			}
+
+			foreach (var child in provider.Children)
+			{
+				BuildQueryStringRecursive(
+					child,
+					queryBody,
+					parameters,
+					inputObject,
+					depth + 1
+				);
+			}
+
+			if (isToken)
+			{
+				queryBody.AppendLineIndented("}", depth);
+			}
 		}
 
 		public UniTask<IResponse> Execute(IClient client, string authToken = null, CancellationToken cancellationToken = default)
 			=> throw new System.NotImplementedException();
 
-		public IQuerySubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
-			where TModel : class, IModel where TInput : class, IInput
+		public IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
+			where TModel : IModel where TInput : class, IInput
 		{
-			RegisterInput(query.Input);
-			
-			var inputType = typeof(TInput);
-			var fields = inputType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-			var parameters = new List<IParameter>();
-			foreach (var field in fields)
-			{
-				var typeAttribute = field.GetCustomAttribute<GraphQLTypeAttribute>();
-				var requiredAttribute = field.GetCustomAttribute<RequiredAttribute>();
-				var jsonAttribute = field.GetCustomAttribute<JsonPropertyAttribute>();
-				
-				var typeName = typeAttribute?.TypeName ?? field.FieldType.Name;
-				if (field.FieldType.IsArray)
-				{
-					typeName = $"[{typeName}]";
-				}
-				if (requiredAttribute != null)
-				{
-					typeName += "!";
-				}
-				
-				var parameterName = jsonAttribute?.PropertyName ?? field.Name;
-				var parameter = new ParameterInfo(parameterName, typeName);
-				parameters.Add(parameter);
-				RegisterParameter(parameter);
-			}
-			
-			return new QuerySubBuilder<QueryBuilder, TModel>(this, parameters);
-		}
-
-		public void RegisterToken(IToken token)
-		{
-			_tokens.Add(token);
-		}
-
-		public void RegisterParameter(IParameter parameter)
-		{
-			_parameters.Add(parameter);
-		}
-
-		public void RegisterInput(object input)
-		{
-			_inputs.Add(input);
+			var builder = new QuerySubBuilder<QueryBuilder, TModel, TInput>(this, query);
+			_providers.Add(builder);
+			return builder;
 		}
 	}
 }

@@ -3,7 +3,7 @@
 namespace AssetRegister.Runtime.Interfaces
 {
 	public interface IQuery<out TFields, out TInput>
-		where TFields : class, IModel
+		where TFields : IModel
 		where TInput : class, IInput
 	{
 		TInput Input { get; }
