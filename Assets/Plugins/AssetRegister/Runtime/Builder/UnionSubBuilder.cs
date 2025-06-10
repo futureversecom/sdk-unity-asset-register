@@ -1,7 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using AssetRegister.Runtime.Interfaces;
 using Cysharp.Threading.Tasks;
@@ -21,7 +20,9 @@ namespace AssetRegister.Runtime.Builder
 		{
 			TokenString = memberName;
 			_parentBuilder = parentBuilder;
-			Children.Add(new StringTokenProvider("__typename")); // Typename required for deserialization
+			
+			// Typename required for deserialization
+			Children.Add(new FieldToken("__typename"));
 		}
 		
 		public TBuilder Done()

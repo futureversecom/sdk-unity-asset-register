@@ -13,18 +13,6 @@ using UnityEngine;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class ParameterInfo : IParameter
-	{
-		public string ParameterName { get; }
-		public string ParameterType { get; }
-
-		public ParameterInfo(string parameterName, string parameterType)
-		{
-			ParameterName = parameterName;
-			ParameterType = parameterType;
-		}
-	}
-	
 	public class QueryBuilder : IQueryBuilder
 	{
 		private readonly List<IProvider> _providers = new();
@@ -65,14 +53,10 @@ namespace AssetRegister.Runtime.Builder
 			if (provider is ITokenProvider tokenProvider)
 			{
 				isToken = true;
-				if (hasChildren)
-				{
-					queryBody.AppendLineIndented($"{tokenProvider.TokenString} {{", depth);
-				}
-				else
-				{
-					queryBody.AppendLineIndented(tokenProvider.TokenString, depth);
-				}
+				queryBody.AppendLineIndented(
+					hasChildren ? $"{tokenProvider.TokenString} {{" : tokenProvider.TokenString,
+					depth
+				);
 			}
 			if (provider is IParameterProvider parameterProvider)
 			{
@@ -114,7 +98,7 @@ namespace AssetRegister.Runtime.Builder
 		public IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
 			where TModel : IModel where TInput : class, IInput
 		{
-			var builder = new QuerySubBuilder<QueryBuilder, TModel, TInput>(this, query);
+			var builder = MethodSubBuilder<QueryBuilder, TModel>.FromQuery(this, query);
 			_providers.Add(builder);
 			return builder;
 		}

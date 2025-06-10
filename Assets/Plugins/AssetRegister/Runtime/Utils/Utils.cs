@@ -11,38 +11,11 @@ namespace Plugins.AssetRegister.Runtime.Utils
 {
 	public static class Utils
 	{
-		public static bool TryGetAttribute<TAttribute>(this Type type, out TAttribute attribute)
-		where TAttribute : Attribute
-		{
-			attribute = type.GetCustomAttribute<TAttribute>();
-			return attribute != null;
-		}
-		
 		public static string GetSchemaName<TSchema>() where TSchema : ISchema
 		{
 			var type = typeof(TSchema);
-			if (type.TryGetAttribute(out JsonObjectAttribute jsonObjectAttribute))
-			{
-				return jsonObjectAttribute.Id;
-			}
-			
-			return type.Name.ToLower();
-		}
-
-		public static string GetGraphQLType(Type type)
-		{
-			var typeAttribute = type.GetCustomAttribute<GraphQLTypeAttribute>();
-			var requiredAttribute = type.GetCustomAttribute<RequiredAttribute>();
-			var typeName = typeAttribute?.TypeName ?? type.Name;
-			if (type.IsArray)
-			{
-				typeName = $"[{typeName}]";
-			}
-			if (requiredAttribute != null)
-			{
-				typeName += "!";
-			}
-			return typeName;
+			var attribute = type.GetCustomAttribute<JsonObjectAttribute>();
+			return attribute == null ? type.Name : attribute.Id;
 		}
 		
 		public static object GetValueFromExpression(Expression expr)

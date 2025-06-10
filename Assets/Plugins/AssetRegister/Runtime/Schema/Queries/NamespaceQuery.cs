@@ -14,10 +14,5 @@ namespace AssetRegister.Runtime.Schema.Queries
 		{
 			Input = NamespaceInput.Create(@namespace);
 		}
-
-		public NamespaceQuery()
-		{
-			
-		}
 	}
 }

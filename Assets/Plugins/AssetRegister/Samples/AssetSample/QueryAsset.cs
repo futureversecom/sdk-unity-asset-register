@@ -31,6 +31,8 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 			// Option 1
 			var request = new QueryBuilder()
 				.Add(new AssetQuery(_collectionId, _tokenId))
+					.WithField(a => a.TokenId)
+					.WithField(a => a.Collection.ChainID)
 					.WithUnion(a => a.Ownership)
 						.On<NFTAssetOwnership>()
 							.WithField(nft => nft.Owner.Handle)
@@ -38,11 +40,6 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 						.On<SFTAssetOwnership>()
 							.WithMethod(sft => sft.balanceOf(_address))
 								.WithField(b => b.Balance)
-								.Done()
-							.Done()
-						.Done()
-					.WithField(a => a.TokenId)
-					.WithField(a => a.Collection.ChainID)
 				.Build();
 	
 			var response = await _client.SendRequest(request, cancellationToken: cancellationTokenSource.Token);

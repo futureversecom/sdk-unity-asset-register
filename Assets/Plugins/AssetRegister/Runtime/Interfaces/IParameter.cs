@@ -2,8 +2,9 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface IUnion : ISchema
+	public interface IParameter
 	{
-		
+		string ParameterName { get; }
+		string ParameterType { get; }
 	}
 }

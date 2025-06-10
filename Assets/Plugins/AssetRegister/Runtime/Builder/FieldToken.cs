@@ -5,12 +5,12 @@ using AssetRegister.Runtime.Interfaces;
 
 namespace AssetRegister.Runtime.Builder
 {
-	public class FieldBuilder : ITokenProvider
+	public class FieldToken : ITokenProvider
 	{
 		public List<IProvider> Children { get; } = new();
 		public string TokenString { get; }
 		
-		public FieldBuilder(string fieldName)
+		public FieldToken(string fieldName)
 		{
 			TokenString = fieldName;
 		}

@@ -2,8 +2,9 @@
 
 namespace AssetRegister.Runtime.Interfaces
 {
-	public interface ISchema
-	{
-		
-	}
+	public interface ISchema { }
+	public interface IModel : ISchema { }
+	public interface IUnion : ISchema { }
+	public interface IInterface : ISchema { }
+	public interface IInput { }
 }

@@ -14,10 +14,5 @@ namespace AssetRegister.Runtime.Schema.Queries
 		{
 			Input = AssetInput.Create(collectionId, tokenId);
 		}
-
-		public AssetQuery()
-		{
-			
-		}
 	}
 }

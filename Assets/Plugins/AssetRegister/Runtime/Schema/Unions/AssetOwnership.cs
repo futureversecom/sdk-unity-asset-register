@@ -16,6 +16,7 @@ namespace AssetRegister.Runtime.Schema.Unions
 	[JsonObject]
 	public class SFTAssetOwnership : AssetOwnership
 	{
+		// ReSharper disable once InconsistentNaming
 		public SFTBalance balanceOf([ChainAddress, Required] string address)
 		{
 			return BalanceOf;

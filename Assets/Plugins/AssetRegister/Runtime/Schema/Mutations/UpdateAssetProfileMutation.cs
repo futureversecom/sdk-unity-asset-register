@@ -15,10 +15,5 @@ namespace AssetRegister.Runtime.Schema.Mutations
 		{ 
 			Arguments = UpdateAssetProfileInput.Create(assetId, key, url);
 		}
-
-		public UpdateAssetProfileMutation()
-		{
-			
-		}
 	}
 }

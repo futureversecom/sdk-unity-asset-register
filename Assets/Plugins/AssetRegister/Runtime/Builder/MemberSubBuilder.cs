@@ -43,7 +43,11 @@ namespace AssetRegister.Runtime.Builder
 			}
 
 			var token = ProcessPath(methodExpression.Object);
-			var builder = new MethodSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, methodExpression);
+			var builder =
+				MethodSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>.FromMethodCallExpression(
+					this,
+					methodExpression
+				);
 			token.Children.Add(builder);
 			return builder;
 		}
@@ -110,7 +114,7 @@ namespace AssetRegister.Runtime.Builder
 					currentProvider.Children.FirstOrDefault(c => c is ITokenProvider t && t.TokenString == name);
 				if (existingBuilder == null)
 				{
-					existingBuilder = new FieldBuilder(name);
+					existingBuilder = new FieldToken(name);
 					currentProvider.Children.Add(existingBuilder);
 				}
 
@@ -132,73 +136,5 @@ namespace AssetRegister.Runtime.Builder
 		{
 			return await _parentBuilder.Execute(client, authToken, cancellationToken);
 		}
-
-		// private void BuildPath(Expression expression, Stack<string> path = null)
-		// {
-		// 	path ??= new Stack<string>();
-		// 	while (expression != null && expression.NodeType != ExpressionType.Parameter)
-		// 	{
-		// 		switch (expression)
-		// 		{
-		// 			case MemberExpression memberExpression:
-		// 				var member = memberExpression.Member;
-		//
-		// 				var jsonProperty = member.GetCustomAttribute<JsonPropertyAttribute>();
-		// 				if (jsonProperty == null)
-		// 				{
-		// 					break;
-		// 				}
-		//
-		// 				var name = jsonProperty.PropertyName;
-		// 				path.Push(name);
-		//
-		// 				expression = memberExpression.Expression;
-		// 				break;
-		// 			case MethodCallExpression methodCallExpression:
-		// 				var method = methodCallExpression.Method;
-		// 				var parameters = method.GetParameters();
-		// 				var inputObject = new Dictionary<string, object>();
-		// 				var allParams = new List<ParameterInfo>();
-		// 				
-		// 				for (var i = 0; i < methodCallExpression.Arguments.Count; i++)
-		// 				{
-		// 					var argExpr = methodCallExpression.Arguments[i];
-		// 					var paramInfo = parameters[i];
-		//
-		// 					var attribute = paramInfo.GetCustomAttribute<GraphQLTypeAttribute>();
-		// 					var requiredAttribute = paramInfo.GetCustomAttribute<RequiredAttribute>();
-		// 					var parameterTypeName =
-		// 						attribute == null ? paramInfo.ParameterType.Name : attribute.TypeName;
-		// 					if (paramInfo.ParameterType.IsArray)
-		// 					{
-		// 						parameterTypeName = $"[{parameterTypeName}]";
-		// 					}
-		// 					if (requiredAttribute != null)
-		// 					{
-		// 						parameterTypeName += "!";
-		// 					}
-		// 					var parameterName = paramInfo.Name;
-		// 						
-		// 					var value = Utils.GetValueFromExpression(argExpr);
-		// 					
-		// 					inputObject.Add(parameterName, value);
-		// 					var parameter = new ParameterInfo(parameterName, parameterTypeName);
-		// 					allParams.Add(parameter);
-		// 					//RegisterParameter(parameter);
-		// 				}
-		// 				
-		// 				//RegisterInput(inputObject);
-		// 				var parameterString = string.Join(
-		// 					", ",
-		// 					allParams.Select(p => $"{p.ParameterName}: ${p.ParameterName}")
-		// 				);
-		// 				path.Push($"{method.Name} ({parameterString})");
-		// 				expression = methodCallExpression.Object;
-		// 				break;
-		// 		}
-		// 	}
-		// 	
-		// 	_fieldBuilder.WithPath(path);
-		// }
 	}
 }
