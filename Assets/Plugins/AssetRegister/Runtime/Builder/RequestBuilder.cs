@@ -3,13 +3,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Plugins.AssetRegister.Runtime.Utils;
 using UnityEngine;
+#if USING_UNITASK
+using Cysharp.Threading.Tasks;
+using System.Threading;
+#else
+using System;
+using System.Collections;
+#endif
 
 namespace AssetRegister.Runtime.Builder
 {
@@ -56,9 +61,28 @@ namespace AssetRegister.Runtime.Builder
 			
 			return new Request(queryString, inputObject, _headers);
 		}
-
-		public UniTask<IResponse> Execute(IClient client, CancellationToken cancellationToken = default)
-			=> throw new System.NotImplementedException();
+		
+#if USING_UNITASK
+		public async UniTask<IResponse> 
+#else 
+		public IEnumerator
+#endif
+			Execute(
+				IClient client,
+#if USING_UNITASK
+				CancellationToken cancellationToken = default
+#else
+				Action<IResponse> onComplete = null
+#endif
+			)
+		{
+			var request = Build();
+#if USING_UNITASK
+			return await client.SendRequest(request, cancellationToken);
+#else
+			yield return client.SendRequest(request, onComplete);
+#endif
+		}
 
 		public TBuilder SetHeader(string headerName, string value)
 		{

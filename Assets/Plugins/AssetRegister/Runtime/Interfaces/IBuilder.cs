@@ -14,9 +14,11 @@ namespace AssetRegister.Runtime.Interfaces
 	public interface IBuilder
 	{
 		IRequest Build();
-		UniTask<IResponse> Execute(
-			IClient client,
-			CancellationToken cancellationToken = default);
+#if USING_UNITASK
+		UniTask<IResponse> Execute(IClient client, CancellationToken cancellationToken = default);
+#else
+		IEnumerator Execute(IClient client, Action<IResponse> callback);
+#endif
 	}
 
 	public interface ISubBuilder<out TBuilder> : IBuilder where TBuilder : IBuilder

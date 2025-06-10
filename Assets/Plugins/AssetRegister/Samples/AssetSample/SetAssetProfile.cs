@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Threading;
 #else
 using System.Collections;
+using AssetRegister.Runtime.Interfaces;
 #endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -42,9 +43,11 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 		private IEnumerator Start()
 		{
 			IResponse response = null;
-			yield return RequestBuilder.Mutation().Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
-				.WithField(x => x.TokenId)
-				.WithField(x => x.Collection.ChainID)
+			yield return Runtime.AssetRegister.NewMutation()
+				.Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
+					.WithField(x => x.Asset.TokenId)
+					.Done()
+				.SetAuth(_siweToken)
 				.Execute(_client, callback: r => response = r);
 			
 			if (!response.Success)

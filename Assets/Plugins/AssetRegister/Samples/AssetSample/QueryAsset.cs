@@ -3,12 +3,13 @@
 using AssetRegister.Runtime.Clients;
 using AssetRegister.Runtime.Schema.Objects;
 using AssetRegister.Runtime.Schema.Queries;
+using AssetRegister.Runtime.Schema.Unions;
 using UnityEngine;
 #if USING_UNITASK
 using System.Threading;
-using AssetRegister.Runtime.Schema.Unions;
 #else
 using System.Collections;
+using AssetRegister.Runtime.Interfaces;
 #endif
 
 namespace Plugins.AssetRegister.Samples.AssetSample
@@ -50,16 +51,23 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 #else
 		private IEnumerator Start()
 		{
-			IResponse result = null;
-			yield return RequestBuilder.Query()
+			IResponse response = null;
+			yield return Runtime.AssetRegister.NewQuery()
 				.Add(new AssetQuery(_collectionId, _tokenId))
-				.WithField(x => x.TokenId)
-				.WithField(x => x.CollectionId)
-				.Execute(_client, callback:r => result = r);
+					.WithField(a => a.TokenId)
+					.WithField(a => a.Collection.ChainID)
+					.WithUnion(a => a.Ownership)
+						.On<NFTAssetOwnership>()
+							.WithField(nft => nft.Owner.Handle)
+							.Done()
+						.On<SFTAssetOwnership>()
+							.WithMethod(sft => sft.balanceOf(_address))
+								.WithField(b => b.Balance)
+				.Execute(_client, callback:r => response = r);
 			
-			if (!result.Success)
+			if (!response.Success)
 			{
-				Debug.LogError($"Errors in request: {result.Error}");
+				Debug.LogError($"Errors in request: {response.Error}");
 				yield break;
 			}
 #endif

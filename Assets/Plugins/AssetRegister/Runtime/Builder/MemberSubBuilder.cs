@@ -7,8 +7,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using AssetRegister.Runtime.Interfaces;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+#if USING_UNITASK
+using Cysharp.Threading.Tasks;
+#else
+using System.Collections;
+#endif
 
 namespace AssetRegister.Runtime.Builder
 {
@@ -124,11 +128,18 @@ namespace AssetRegister.Runtime.Builder
 			return _parentBuilder.Build();
 		}
 
+#if USING_UNITASK
 		public async UniTask<IResponse> Execute(
 			IClient client,
 			CancellationToken cancellationToken = default)
 		{
 			return await _parentBuilder.Execute(client, cancellationToken);
 		}
+#else
+		public IEnumerator Execute(IClient client, Action<IResponse> callback)
+		{
+			return _parentBuilder.Execute(client, callback);
+		}
+#endif
 	}
 }
