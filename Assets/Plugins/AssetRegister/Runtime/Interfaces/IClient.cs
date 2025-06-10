@@ -19,7 +19,6 @@ namespace AssetRegister.Runtime.Interfaces
 #endif
 		SendRequest(
 			IRequest request,
-			string authenticationToken = null,
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
 #else

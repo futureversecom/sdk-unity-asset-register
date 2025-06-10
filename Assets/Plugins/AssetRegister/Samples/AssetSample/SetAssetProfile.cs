@@ -28,9 +28,10 @@ namespace Plugins.AssetRegister.Samples.AssetSample
 				.Add(new UpdateAssetProfileMutation(_assetId, _key, _assetProfileUrl))
 					.WithField(x => x.Asset.TokenId)
 					.Done()
+				.SetAuth(_siweToken)
 				.Build();
 
-			var response = await _client.SendRequest(request, _siweToken, cancellationTokenSource.Token);
+			var response = await _client.SendRequest(request, cancellationTokenSource.Token);
 			
 			if (!response.Success)
 			{

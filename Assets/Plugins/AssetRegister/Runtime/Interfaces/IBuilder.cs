@@ -16,7 +16,6 @@ namespace AssetRegister.Runtime.Interfaces
 		IRequest Build();
 		UniTask<IResponse> Execute(
 			IClient client,
-			string authToken = null,
 			CancellationToken cancellationToken = default);
 	}
 
@@ -25,13 +24,19 @@ namespace AssetRegister.Runtime.Interfaces
 		TBuilder Done();
 	}
 
-	public interface IQueryBuilder : IBuilder
+	public interface IRequestBuilder<out TBuilder> : IBuilder where TBuilder : IRequestBuilder<TBuilder>
+	{
+		TBuilder SetHeader(string headerName, string value);
+		TBuilder SetAuth(string authToken);
+	}
+
+	public interface IQueryBuilder : IRequestBuilder<IQueryBuilder>
 	{
 		IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
 			where TModel : IModel where TInput : class, IInput;
 	}
 	
-	public interface IMutationBuilder : IBuilder
+	public interface IMutationBuilder : IRequestBuilder<IMutationBuilder>
 	{
 		IMemberSubBuilder<IMutationBuilder, TModel> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
 			where TModel : IModel where TInput : class, IInput;

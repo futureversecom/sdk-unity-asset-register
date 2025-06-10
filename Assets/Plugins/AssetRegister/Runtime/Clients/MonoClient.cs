@@ -18,7 +18,6 @@ namespace AssetRegister.Runtime.Clients
 	public sealed class MonoClient : MonoBehaviour, IClient
 	{
 		[SerializeField] private string _graphQlEndpoint;
-		[SerializeField] private string _authenticationToken;
 
 #if USING_UNITASK
 		public async UniTask<IResponse> 
@@ -27,7 +26,6 @@ namespace AssetRegister.Runtime.Clients
 #endif
 		SendRequest(
 			IRequest request,
-			string authenticationToken = null,
 #if USING_UNITASK
 			CancellationToken cancellationToken = default
 #else
@@ -40,10 +38,10 @@ namespace AssetRegister.Runtime.Clients
 			
 			webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
 			webRequest.downloadHandler = new DownloadHandlerBuffer();
-			
-			var authToken = authenticationToken ?? _authenticationToken;
-			webRequest.SetRequestHeader("Authorization", authToken);
-			webRequest.SetRequestHeader("Content-Type", "application/json");
+			foreach (var header in request.Headers)
+			{
+				webRequest.SetRequestHeader(header.Key, header.Value);
+			}
 
 #if USING_UNITASK
 			await webRequest.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
@@ -62,11 +60,11 @@ namespace AssetRegister.Runtime.Clients
 			}
 
 			var resultString = webRequest.downloadHandler.text;
-			var result = Response.Parse(resultString);
+			var response = Response.Parse(resultString);
 #if USING_UNITASK
-			return result;
+			return response;
 #else
-			onComplete?.Invoke(result);
+			onComplete?.Invoke(response);
 #endif
 		}
 	}

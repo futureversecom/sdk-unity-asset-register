@@ -1,5 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
+using System.Collections.Generic;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,13 +9,16 @@ namespace AssetRegister.Runtime.Core
 {
 	internal class Request : IRequest
 	{
+		public Dictionary<string, string> Headers { get; }
+		
 		private readonly JObject _input;
 		private readonly string _queryString;
 
-		public Request(string queryString, JObject arguments)
+		public Request(string queryString, JObject arguments, Dictionary<string, string> headers)
 		{
 			_queryString = queryString;
 			_input = arguments;
+			Headers = headers;
 		}
 
 		public void OverrideArguments<T>(T arguments) where T : class, IInput

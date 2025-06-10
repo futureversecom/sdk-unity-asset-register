@@ -6,16 +6,10 @@ using Cysharp.Threading.Tasks;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class MutationBuilder: RequestBuilder, IMutationBuilder
+	internal class MutationBuilder: RequestBuilder<IMutationBuilder>, IMutationBuilder
 	{
 		protected override RequestType RequestType => RequestType.Mutation;
 		
-		public IRequest Build()
-			=> BuildRequest();
-
-		public UniTask<IResponse> Execute(IClient client, string authToken = null, CancellationToken cancellationToken = default)
-			=> throw new System.NotImplementedException();
-
 		public IMemberSubBuilder<IMutationBuilder, TModel> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
 			where TModel : IModel where TInput : class, IInput
 		{

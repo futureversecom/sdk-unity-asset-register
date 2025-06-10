@@ -126,10 +126,9 @@ namespace AssetRegister.Runtime.Builder
 
 		public async UniTask<IResponse> Execute(
 			IClient client,
-			string authToken = null,
 			CancellationToken cancellationToken = default)
 		{
-			return await _parentBuilder.Execute(client, authToken, cancellationToken);
+			return await _parentBuilder.Execute(client, cancellationToken);
 		}
 	}
 }

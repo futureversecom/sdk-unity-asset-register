@@ -6,15 +6,9 @@ using Cysharp.Threading.Tasks;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class QueryBuilder : RequestBuilder, IQueryBuilder
+	internal class QueryBuilder : RequestBuilder<IQueryBuilder>, IQueryBuilder
 	{
 		protected override RequestType RequestType => RequestType.Query;
-		
-		public IRequest Build()
-			=> BuildRequest();
-
-		public UniTask<IResponse> Execute(IClient client, string authToken = null, CancellationToken cancellationToken = default)
-			=> throw new System.NotImplementedException();
 
 		public IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
 			where TModel : IModel where TInput : class, IInput
