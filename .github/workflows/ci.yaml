@@ -24,7 +24,7 @@ jobs:
           app_id: ${{ secrets.FV_GH_BOT_APP_ID }}
           private_key: ${{ secrets.FV_GH_BOT_PRIVATE_KEY }}
 
-      - name: Bump version and generate changelog
+      - name: Bump version
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5
         with:
@@ -34,19 +34,20 @@ jobs:
           git-user-name: FVCodePublisher
           git-user-email: codepublish@futureverse.com
 
-      - name: Find Package Files
+      - name: Find package files
+        if: steps.changelog.outputs.skipped != 'true'
         run: |
           echo "Assets/Plugins/AssetRegister.meta" >> "metalist"
           find "Assets/Plugins/AssetRegister/" -name \*.meta >> "metaList"
 
-      - name: Create Unity Package
+      - name: Create unity package
         if: steps.changelog.outputs.skipped != 'true'
         uses: pCYSl5EDgo/create-unitypackage@master
         with:
           package-path: "AssetRegisterSDK.unitypackage"
           include-files: metaList
 
-      - name: Create GitHub Release
+      - name: Create GitHub release
         if: steps.changelog.outputs.skipped != 'true'
         uses: softprops/action-gh-release@v1
         with:
