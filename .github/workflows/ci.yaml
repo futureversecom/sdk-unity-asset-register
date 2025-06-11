@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Bump, Build, Release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Bump version and generate changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version-file: "Assets/Plugins/AssetRegister/package.json"
+          input-file: "./CHANGELOG.md"
+
+      - name: Find Package Files
+        run: |
+          echo "Assets/Plugins/AssetRegister.meta" >> "metalist"
+          find "Assets/Plugins/AssetRegister/" -name \*.meta >> "metaList"
+
+      - name: Create Unity Package
+        uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: "AssetRegisterSDK.unitypackage"
+          include-files: metaList
+
+      - name: Create GitHub Release
+        if: steps.changelog.outputs.skipped != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.changelog.outputs.version }}
+          name: v${{ steps.changelog.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: AssetRegisterSDK.unitypackage
