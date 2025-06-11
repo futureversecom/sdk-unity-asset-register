@@ -12,6 +12,8 @@ using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 #else
+using System;
+using System.Collections;
 #endif
 
 namespace Plugins.AssetRegister.Runtime
@@ -56,7 +58,8 @@ namespace Plugins.AssetRegister.Runtime
 				headerDict
 			);
 		}
-
+		
+		#if USING_UNITASK
 		/// <summary>
 		/// Helper method to get the Asset Profile URL of a profile
 		/// </summary>
@@ -67,30 +70,58 @@ namespace Plugins.AssetRegister.Runtime
 		/// <returns>The profile URL, or null if an error occurred</returns>
 		public static async UniTask<string> GetAssetProfileUrl(IClient client, string collectionId, string tokenId, CancellationToken token = default)
 		{
-			var result = await new QueryBuilder()
+			var response = await NewQuery()
 				.Add(new AssetQuery(collectionId, tokenId))
 					.WithField(a => a.Profiles)
 				.Execute(client, token);
+#else
+		public static IEnumerator GetAssetProfileUrl(IClient client, string collectionId, string tokenId, Action<string> callback = null)
+		{
+			IResponse response = null;
+			yield return NewQuery()
+				.Add(new AssetQuery(collectionId, tokenId))
+					.WithField((a => a.Profiles))
+				.Execute(client, r => response = r);
+#endif
 
-			if (!result.Success)
+			if (!response.Success)
 			{
-				Debug.Log(result.Error);
+				Debug.LogError(response.Error);
+#if USING_UNITASK
 				return null;
+#else
+				callback?.Invoke(null);
+				yield break;
+#endif
 			}
 
-			if (!result.TryGetModel(out Asset asset))
+			if (!response.TryGetModel(out Asset asset))
 			{
-				Debug.Log("Couldn't get asset from result");
+				Debug.LogError("Couldn't get asset from result");
+#if USING_UNITASK
 				return null;
+#else
+				callback?.Invoke(null);
+				yield break;
+#endif
 			}
 
 			if (!asset.Profiles.TryGetValue("asset-profile", out var profile))
 			{
-				Debug.Log("Profiles does not contain asset-profile");
+				Debug.LogError("Profiles does not contain asset-profile");
+#if USING_UNITASK
 				return null;
+#else
+				callback?.Invoke(null);
+				yield break;
+#endif
 			}
 
+#if USING_UNITASK
 			return profile.ToString();
+#else
+			callback?.Invoke(profile.ToString());
+#endif
 		}
 	}
 }
