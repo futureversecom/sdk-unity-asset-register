@@ -40,6 +40,7 @@ jobs:
           find "Assets/Plugins/AssetRegister/" -name \*.meta >> "metaList"
 
       - name: Create Unity Package
+        if: steps.changelog.outputs.skipped != 'true'
         uses: pCYSl5EDgo/create-unitypackage@master
         with:
           package-path: "AssetRegisterSDK.unitypackage"
