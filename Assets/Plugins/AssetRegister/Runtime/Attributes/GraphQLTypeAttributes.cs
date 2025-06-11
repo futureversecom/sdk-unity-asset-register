@@ -39,4 +39,9 @@ namespace AssetRegister.Runtime.Attributes
 	{
 		public override string TypeName => "ChainAddress";
 	}
+	
+	internal class ProfilesAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "Profiles";
+	}
 }

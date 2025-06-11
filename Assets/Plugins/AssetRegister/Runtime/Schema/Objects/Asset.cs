@@ -6,6 +6,7 @@ using AssetRegister.Runtime.Schema.Enums;
 using AssetRegister.Runtime.Schema.Objects;
 using AssetRegister.Runtime.Schema.Unions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Plugins.AssetRegister.Runtime.Utils;
 
 namespace AssetRegister.Runtime.Schema.Objects
@@ -22,5 +23,6 @@ namespace AssetRegister.Runtime.Schema.Objects
 		[JsonProperty("name")] public string Name;
 		[JsonProperty("ownership"), JsonConverter(typeof(UnionConverter))] 
 		public AssetOwnership Ownership;
+		[JsonProperty("profiles")] public JObject Profiles;
 	}
 }

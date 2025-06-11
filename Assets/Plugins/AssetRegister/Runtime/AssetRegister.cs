@@ -4,7 +4,15 @@ using System.Collections.Generic;
 using AssetRegister.Runtime.Builder;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
+using AssetRegister.Runtime.Schema.Objects;
+using AssetRegister.Runtime.Schema.Queries;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
+#if USING_UNITASK
+using System.Threading;
+using Cysharp.Threading.Tasks;
+#else
+#endif
 
 namespace Plugins.AssetRegister.Runtime
 {
@@ -47,6 +55,42 @@ namespace Plugins.AssetRegister.Runtime
 				variables == null ? new JObject() : JObject.FromObject(variables),
 				headerDict
 			);
+		}
+
+		/// <summary>
+		/// Helper method to get the Asset Profile URL of a profile
+		/// </summary>
+		/// <param name="client"></param>
+		/// <param name="collectionId"></param>
+		/// <param name="tokenId"></param>
+		/// <param name="token"></param>
+		/// <returns>The profile URL, or null if an error occurred</returns>
+		public static async UniTask<string> GetAssetProfileUrl(IClient client, string collectionId, string tokenId, CancellationToken token = default)
+		{
+			var result = await new QueryBuilder()
+				.Add(new AssetQuery(collectionId, tokenId))
+					.WithField(a => a.Profiles)
+				.Execute(client, token);
+
+			if (!result.Success)
+			{
+				Debug.Log(result.Error);
+				return null;
+			}
+
+			if (!result.TryGetModel(out Asset asset))
+			{
+				Debug.Log("Couldn't get asset from result");
+				return null;
+			}
+
+			if (!asset.Profiles.TryGetValue("asset-profile", out var profile))
+			{
+				Debug.Log("Profiles does not contain asset-profile");
+				return null;
+			}
+
+			return profile.ToString();
 		}
 	}
 }
