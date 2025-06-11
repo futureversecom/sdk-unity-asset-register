@@ -1,5 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
+using System;
 using System.Text;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
@@ -10,14 +11,32 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 #else 
 using System.Collections;
-using System;
 #endif
 
 namespace AssetRegister.Runtime.Clients
 {
 	public sealed class MonoClient : MonoBehaviour, IClient
 	{
-		[SerializeField] private string _graphQlEndpoint;
+		private enum Environment
+		{
+			Staging,
+			Production,
+		}
+		
+		[SerializeField] private Environment _environment;
+
+		private string _graphQLEndpoint;
+
+		private void Awake()
+		{
+			var target = _environment switch
+			{
+				Environment.Production => "app",
+				Environment.Staging => "cloud",
+				_ => throw new Exception("Environment not handled"),
+			};
+			_graphQLEndpoint = $"https://ar-api.futureverse.{target}/graphql";
+		}
 
 #if USING_UNITASK
 		public async UniTask<IResponse> 
@@ -33,7 +52,7 @@ namespace AssetRegister.Runtime.Clients
 #endif
 		)
 		{
-			using var webRequest = new UnityWebRequest(_graphQlEndpoint, "POST");
+			using var webRequest = new UnityWebRequest(_graphQLEndpoint, "POST");
 			var jsonPayload = request.Serialize();
 			
 			webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
