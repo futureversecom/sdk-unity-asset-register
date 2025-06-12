@@ -9,6 +9,16 @@ A Unity client for the Asset Register. Provides an API for creating and sending 
 
 Go to the Unity Package Manager window, and select `Add package from git URL...` and enter this link https://github.com/futureversecom/sdk-unity-asset-register.git?path=Assets/Plugins/AssetRegister (append `#vX.X.X` to specify a version). Alternatively, you can get a .unitypackage from the Releases page.
 
+To use it in your project, you will need to include the AssetRegister.Runtime Assembly Definition.
+
+### Samples
+
+When installing through the Unity Package Manager, you can choose to install the Asset Sample in the Samples tab. This contains a test scene and two basic scripts showing how to send a query and a mutation.
+
+### UniTask Compatibility
+
+The Asset Register SDK uses asynchronous methods to make web requests. It uses coroutines, so you must call yield return when using them. But through use of Version Defines, if you have [UniTask](https://github.com/Cysharp/UniTask) installed, it will change the signature of those asynchronous methods to use UniTask, so you can await them, and pass in a cancellation token instead of a callback.
+
 ## Getting Started
 
 This example script shows a simple Asset Register request. It queries the Asset schema, including only the `id` field. After checking that the request has succeeded, the response is parsed for the Asset, and the `id` is logged.
@@ -47,7 +57,7 @@ To use this script, add it to a GameObject in your scene. You will also need to 
 
 ![image](https://github.com/user-attachments/assets/8f39e359-59f0-4d83-8cc5-00ef9e4db993)
 
-To complete the test, you can use
+Note that on MonoClient, you can set the environment to either `Staging` or `Production`. This affects the endpoint that the GraphQL requests are sent to. To complete the test, you can use
 
 * Collection ID: `11155111:evm:0x85225575aae6e8275e3d2be9e86268f916f3e2be`
 * Token ID: `400`
@@ -140,10 +150,105 @@ An `IMemberSubBuilder` can also call `.WithMethod()`. Some GraphQL queries can c
 
 ### Unions
 
+`IMemberSubBuilder`s can also call `.WithUnion()`, which also takes an Expression parameter. See more about GraphQL unions [here](https://graphql.org/learn/schema/#union-types), but essentially, a Union can be one of multiple types. When calling `.WithUnion()`, the member chain must end with a member that implements the `IUnion` interface. `.WithUnion()` returns an `IUnionSubBuilder`.
+
+The `IUnionSubBuilder` Provides a single method: `On<T>()` where the generic parameter `TUnionType` is a subtype of the Union member that `.WithUnion()` was called with. It returns an `IMemberSubBuilder` where `TType` is the `TUnionType`. A concrete example is provided further on.
+
+When getting a Union type from the IResult object, the following syntax is recommended:
+
+```csharp
+if (response.TryGetModel<Asset>(out var asset))
+{
+  if (asset.Ownership is SFTAssetOwnership ownership)
+  {
+    Debug.Log(ownership.BalanceOf.Balance);
+  }
+}
+```
+
 ### Interfaces
 
 Interfaces will be supported in a future version.
 
-### Caching Requests
+### Putting it all together
+
+Below is a more complex example of a query that puts together all the different aspects of the RequestBuilder system.
+
+```csharp
+  IRequest request = AR.NewQuery()
+    .Add(new AssetQuery(_collectionId, _tokenId))
+      .WithField(a => a.TokenId)
+      .WithField(a => a.Collection.ChainID)
+      .WithUnion(a => a.Ownership)
+        .On<NFTAssetOwnership>()
+          .WithField(nft => nft.Owner.Handle)
+          .Done()
+        .On<SFTAssetOwnership>()
+          .WithMethod(sft => sft.balanceOf(_address))
+            .WithField(b => b.Balance)
+    .Build();
+
+  IResponse response = null;
+  yield return _client.SendRequest(request, r => response = r);
+```
+
+Some things to note about this example:
+* The `Done()` method is called to return the parent builder, letting you call multiple `.On<>` methods for the `Ownership` union.
+* For any sub-builder, calling `.Build()` will simply call `Build` on the parent builder. This means you don't have to chain multiple `Build()` calls at the end of the query, you just call it once. This applies to the `.Execute()` method as well.
+* `.Build()` is used here instead of the `.Execute()` shorthand you saw in the first example. This returns an `IRequest` object, which is then passed into the client's `SendRequest()` method.
+
+> [!TIP]
+> You can see the [equivalent request](https://ar-api.futureverse.cloud/graphql?explorerURLState=N4IgJg9gxgrgtgUwHYBcQC4QEcYIE4CeABAIIDOZCKAFACQoQDWyAkmOkQMop4CWSAcwCEAGiK0oEADZSEUFLwhI2HAMLTZ8xcrCjxAQzBg8CCmoAW%2B-iSMmKQgJRFgAHSREi%2BilWoNmOjnomVjAxSRk5BSUVcXDNKJ0nV3cPIj8Qt1SiOMjtZ0ys7Mt%2BNgKPAF8yoggAdyR8MnNeAAdkwqIAOi6lIgA5ADEAFXJKFAB5Ooam5vyU9tr6vFn2rMskMFkqrMq51J32ro6eziGRqgnFxpbllYAjfSl9JCgEMYAzakNjUzJAr7syEktoV7o9nghgRVgfs9gUduUQCIQAA3fR8fS3WRkDAgYAeFx4AouEDpHTEjjE4kiAlEkA5LTRMDkoiUxE0lLE-4-Zms9kI8pAA) in the Futureverse GraphQL Sandbox.
+
+## More on Requests
+
+### Setting Headers
+
+Given an `IRequest` object, you can set any headers that should be added to the http request like so:
+
+```csharp
+request.Headers.Add("Authorization", _authToken);
+```
+
+But you can also set them on an `IQueryBuilder` or `IMutationBuilder` directly:
+
+```csharp
+yield return AR.NewQuery()
+  // Query
+  .SetHeader("Authorization", _authToken)
+  .Execute(_client, r => response = r);
+```
+
+Setting the `Content-Type` header to `application/json` is done automatically, so you don't need to do that every time. But since setting the auth header will likely be the most common one, you could replace the `SetHeader` call in the above example with the shortcut `.SetAuth(_authToken)`.
+
+### Raw Requests
+
+You can create an `IRequest` object from a raw query string by calling `AR.RawRequest()`, and passing in the request body, an optional variables object, and an optional dictionary of headers. Again, the the `Content-Type` header is set automatically here.
+
+### Caching
+
+Due to its use of reflection, using the RequestBuilder system frequently could be a performance concern. If you are sending the same query multiple times, it is recommended to cache the `IRequest` object that is created by the ReqeustBuilder, and pass that into `IClient.SendRequest` rather than using the `.Execute()` shorthand.
+
+If you need to send the same request but with different variables, the `IRequest` interface provides an `OverrideInputs` method. This can be used like so:
+
+```csharp
+IRequest request = AR.NewQuery()
+  .Add(new AssetQuery())
+    .WithField(a => a.TokenId)
+  .Build();
+
+IResponse response = null;
+
+request.OverrideInputs(AssetInput.Create(_collectionId1, _tokenId1));
+yield return _client.SendRequest(request, r => response = r);
+
+request.OverrideInputs(AssetInput.Create(_collectionId2, _tokenId2));
+yield return _client.SendRequest(request, r => response = r);
+```
 
 ## Helper Methods
+
+The Asset Register SDK provides some helper methods as shortcuts for some common queries. These are static methods available under the `AR` class.
+
+> [!NOTE]
+> `GetAssetProfileUrl` is the only helper method available as of the current version. More will be added in future releases.
