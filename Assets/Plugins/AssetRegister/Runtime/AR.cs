@@ -21,7 +21,7 @@ namespace Plugins.AssetRegister.Runtime
 	/// <summary>
 	/// Main entry point of the plugin
 	/// </summary>
-	public static class AssetRegister
+	public static class AR
 	{
 		/// <summary>
 		/// Generates a new query builder

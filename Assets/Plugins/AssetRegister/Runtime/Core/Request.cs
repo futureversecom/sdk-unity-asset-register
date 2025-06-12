@@ -21,7 +21,7 @@ namespace AssetRegister.Runtime.Core
 			Headers = headers;
 		}
 
-		public void OverrideArguments<TInput>(TInput input) where TInput : class, IInput
+		public void OverrideInputs<TInput>(TInput input) where TInput : class, IInput
 		{
 			_input.Merge(JObject.FromObject(input));
 		}

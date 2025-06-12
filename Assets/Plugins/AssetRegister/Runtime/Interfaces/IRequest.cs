@@ -23,6 +23,6 @@ namespace AssetRegister.Runtime.Interfaces
 		/// </summary>
 		/// <param name="input"></param>
 		/// <typeparam name="TInput">Type of input to provide</typeparam>
-		void OverrideArguments<TInput>(TInput input) where TInput : class, IInput;
+		void OverrideInputs<TInput>(TInput input) where TInput : class, IInput;
 	}
 }
