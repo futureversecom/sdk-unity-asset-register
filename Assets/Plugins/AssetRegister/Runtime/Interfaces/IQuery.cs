@@ -8,7 +8,7 @@ namespace AssetRegister.Runtime.Interfaces
 	/// <typeparam name="TModel"></typeparam>
 	/// <typeparam name="TInput"></typeparam>
 	public interface IQuery<out TModel, out TInput>
-		where TModel : IModel
+		where TModel : ISchema
 		where TInput : class, IInput
 	{
 		TInput Input { get; }

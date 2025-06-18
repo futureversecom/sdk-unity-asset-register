@@ -6,10 +6,14 @@ using Newtonsoft.Json;
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject("namespace")]
-	public sealed class Namespace : IModel
+	public sealed class Namespace : NodeBase
 	{
-		[JsonProperty("id")] public string Id;
 		[JsonProperty("schemas")] public SchemasConnection Schemas;
 		[JsonProperty("url")] public string Url;
 	}
+	
+	[JsonObject]
+	public sealed class NamespaceEdge : EdgeBase<Namespace> { }
+	[JsonObject]
+	public sealed class NamespacesConnection : ConnectionBase<NamespaceEdge> { }
 }

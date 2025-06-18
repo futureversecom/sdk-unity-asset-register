@@ -2,14 +2,13 @@
 
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public sealed class AssetTree : NodeBase
+	public abstract class EdgeBase<T> : ISchema where T : class, ISchema
 	{
-		[JsonProperty("data")] public JObject Data;
-		[JsonProperty("nodeId")] public string NodeId;
+		[JsonProperty("cursor")] public string Cursor;
+		[JsonProperty("node")] public T Node;
 	}
 }

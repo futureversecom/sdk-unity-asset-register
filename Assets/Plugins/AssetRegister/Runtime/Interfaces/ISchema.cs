@@ -14,6 +14,7 @@ namespace AssetRegister.Runtime.Interfaces
 	/// Represents a GraphQL union type
 	/// </summary>
 	public interface IUnion : ISchema { }
+	public interface IInterface : ISchema { }
 	/// <summary>
 	/// Represents input to a GraphQL query or mutation
 	/// </summary>

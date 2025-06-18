@@ -2,14 +2,14 @@
 
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public sealed class AssetTree : NodeBase
+	public sealed class Link : NodeBase
 	{
-		[JsonProperty("data")] public JObject Data;
-		[JsonProperty("nodeId")] public string NodeId;
+		[JsonProperty("asset")] public Asset Asset;
+		[JsonProperty("offChainAsset")] public OffChainAsset OffChainAsset;
+		[JsonProperty("path")] public string Path;
 	}
 }

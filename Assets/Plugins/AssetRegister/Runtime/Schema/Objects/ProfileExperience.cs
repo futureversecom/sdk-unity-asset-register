@@ -2,14 +2,14 @@
 
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public sealed class AssetTree : NodeBase
+	public sealed class ProfileExperience : NodeBase
 	{
-		[JsonProperty("data")] public JObject Data;
-		[JsonProperty("nodeId")] public string NodeId;
+		[JsonProperty("experience")] public string Experience;
+		[JsonProperty("owner")] public string Owner;
+		[JsonProperty("profileId")] public string ProfileId;
 	}
 }

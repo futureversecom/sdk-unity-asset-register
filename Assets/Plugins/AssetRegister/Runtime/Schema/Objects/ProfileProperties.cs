@@ -1,13 +1,13 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
+using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public class SFTBalance : NodeBase
+	public sealed class ProfileProperties : ISchema
 	{
-		[JsonProperty("balance")] public float Balance;
-		[JsonProperty("owner")] public Account Owner;
+		[JsonProperty("description")] public string Description;
 	}
 }

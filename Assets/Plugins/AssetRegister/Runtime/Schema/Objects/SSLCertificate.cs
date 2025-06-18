@@ -2,14 +2,14 @@
 
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public sealed class AssetTree : NodeBase
+	public sealed class SSLCertificate : ISchema
 	{
-		[JsonProperty("data")] public JObject Data;
-		[JsonProperty("nodeId")] public string NodeId;
+		[JsonProperty("cnameName")] public string CNameName;
+		[JsonProperty("cnameValue")] public string CNameValue;
+		[JsonProperty("status")] public string Status;
 	}
 }

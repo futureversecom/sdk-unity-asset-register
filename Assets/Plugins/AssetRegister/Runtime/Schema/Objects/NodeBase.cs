@@ -1,13 +1,13 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using Newtonsoft.Json;
+using Plugins.AssetRegister.Runtime.Schema.Interfaces;
 
 namespace AssetRegister.Runtime.Schema.Objects
 {
 	[JsonObject]
-	public class SFTBalance : NodeBase
+	public class NodeBase : INode
 	{
-		[JsonProperty("balance")] public float Balance;
-		[JsonProperty("owner")] public Account Owner;
+		[JsonProperty("id")] public string Id { get; }
 	}
 }

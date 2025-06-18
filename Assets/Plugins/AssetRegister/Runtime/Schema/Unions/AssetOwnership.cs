@@ -8,10 +8,7 @@ using Newtonsoft.Json;
 namespace AssetRegister.Runtime.Schema.Unions
 {
 	[JsonObject]
-	public class AssetOwnership : IUnion
-	{
-		[JsonProperty("id")] public string Id;
-	}
+	public class AssetOwnership : NodeBase, IUnion { }
 
 	[JsonObject]
 	public sealed class SFTAssetOwnership : AssetOwnership
