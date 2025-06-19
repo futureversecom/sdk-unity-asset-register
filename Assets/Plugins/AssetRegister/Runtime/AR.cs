@@ -27,7 +27,7 @@ namespace Plugins.AssetRegister.Runtime
 		/// Generates a new query builder
 		/// </summary>
 		/// <returns></returns>
-		public static IQueryBuilder NewQuery()
+		public static IQueryBuilder NewQueryBuilder()
 		{
 			return new QueryBuilder();
 		}
@@ -36,7 +36,7 @@ namespace Plugins.AssetRegister.Runtime
 		/// Generates a new mutation builder
 		/// </summary>
 		/// <returns></returns>
-		public static IMutationBuilder NewMutation()
+		public static IMutationBuilder NewMutationBuilder()
 		{
 			return new MutationBuilder();
 		}
@@ -70,7 +70,7 @@ namespace Plugins.AssetRegister.Runtime
 		/// <returns>The profile URL, or null if an error occurred</returns>
 		public static async UniTask<string> GetAssetProfileUrl(IClient client, string collectionId, string tokenId, CancellationToken token = default)
 		{
-			var response = await NewQuery()
+			var response = await NewQueryBuilder()
 				.AddAssetQuery(collectionId, tokenId)
 					.WithField(a => a.Profiles)
 				.Execute(client, token);

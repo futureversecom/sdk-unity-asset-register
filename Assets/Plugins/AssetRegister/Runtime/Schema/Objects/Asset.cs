@@ -16,7 +16,8 @@ namespace AssetRegister.Runtime.Schema.Objects
 		[JsonProperty("assetType")] public AssetType AssetType;
 		[JsonProperty("collection")] public Collection Collection;
 		[JsonProperty("collectionId")] public string CollectionId;
-		[JsonProperty("links")] public AssetLink Links;
+		[JsonProperty("links"), JsonConverter(typeof(UnionConverter))] 
+		public AssetLink Links;
 		[JsonProperty("metadata")] public Metadata Metadata;
 		[JsonProperty("ownership"), JsonConverter(typeof(UnionConverter))] 
 		public AssetOwnership Ownership;

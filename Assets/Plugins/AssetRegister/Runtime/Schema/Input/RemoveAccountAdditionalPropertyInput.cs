@@ -7,20 +7,17 @@ using Newtonsoft.Json;
 namespace AssetRegister.Runtime.Schema.Input
 {
 	[JsonObject]
-	public sealed class UpdateAssetProfileInput : IInput
+	public sealed class RemoveAccountAdditionalPropertyInput : IInput
 	{
-		[String, Required, JsonProperty("assetId")]
-		public string AssetId;
 		[String, Required, JsonProperty("key")]
 		public string Key;
-		[String, Required, JsonProperty("url")]
-		public string Url;
+		[ChainAddress, Required, JsonProperty("owner")]
+		public string Owner;
 
-		public UpdateAssetProfileInput(string assetId, string key, string url)
+		public RemoveAccountAdditionalPropertyInput(string key, string owner)
 		{
-			AssetId = assetId;
 			Key = key;
-			Url = url;
-		} 
+			Owner = owner;
+		}
 	}
 }

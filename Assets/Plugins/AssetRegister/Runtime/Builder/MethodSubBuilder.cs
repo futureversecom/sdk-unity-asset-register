@@ -41,13 +41,7 @@ namespace AssetRegister.Runtime.Builder
                 var value = Utils.GetValueFromExpression(expression.Arguments[i]);
                 
                 // Ignore parameter if the value is default
-                if (value == null)
-                {
-                    continue;
-                }
-                
-                var @default = Utils.GetDefaultValue(value.GetType());
-                if (value.Equals(@default))
+                if (value == null || value.Equals(Utils.GetDefaultValue(value.GetType())))
                 {
                     continue;
                 }

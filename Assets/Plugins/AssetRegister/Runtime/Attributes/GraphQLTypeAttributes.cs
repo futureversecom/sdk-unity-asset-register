@@ -64,4 +64,19 @@ namespace AssetRegister.Runtime.Attributes
 	{
 		public override string TypeName => "AssetTransactionMessage";
 	}
+	
+	internal class TransactionHashAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "TransactionHash";
+	}
+	
+	internal class SchemaIdentifierAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "SchemaIdentifier";
+	}
+	
+	internal class PropertyValueAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "PropertyValue";
+	}
 }
