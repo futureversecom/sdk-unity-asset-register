@@ -9,20 +9,14 @@ namespace AssetRegister.Runtime.Schema.Input
 	[JsonObject]
 	public sealed class AssetInput : IInput
 	{
-		[String, Required, JsonProperty("tokenId")]
-		public string TokenId;
 		[CollectionId, Required, JsonProperty("collectionId")]
 		public string CollectionId;
+		[String, Required, JsonProperty("tokenId")] public string TokenId;
 
-		private AssetInput(string collectionId, string tokenId)
+		public AssetInput(string collectionId, string tokenId)
 		{
 			CollectionId = collectionId;
 			TokenId = tokenId;
-		}
-
-		public static AssetInput Create(string collectionId, string tokenId)
-		{
-			return new AssetInput(collectionId, tokenId);
 		}
 	}
 }

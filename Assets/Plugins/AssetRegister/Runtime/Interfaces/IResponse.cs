@@ -18,9 +18,9 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <summary>
 		/// Use to try to deserialize the response into a model object.
 		/// </summary>
-		/// <param name="model">The resulting model</param>
-		/// <typeparam name="TModel">The type of model to retrieve</typeparam>
+		/// <param name="result">The resulting model</param>
+		/// <typeparam name="TResult">The type of model to retrieve</typeparam>
 		/// <returns></returns>
-		bool TryGetModel<TModel>(out TModel model) where TModel : class, IModel;
+		bool TryGetModel<TResult>(out TResult result) where TResult : class, IResult;
 	}
 }

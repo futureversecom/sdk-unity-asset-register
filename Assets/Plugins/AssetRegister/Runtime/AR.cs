@@ -71,7 +71,7 @@ namespace Plugins.AssetRegister.Runtime
 		public static async UniTask<string> GetAssetProfileUrl(IClient client, string collectionId, string tokenId, CancellationToken token = default)
 		{
 			var response = await NewQuery()
-				.Add(new AssetQuery(collectionId, tokenId))
+				.AddAssetQuery(collectionId, tokenId)
 					.WithField(a => a.Profiles)
 				.Execute(client, token);
 #else
@@ -95,7 +95,7 @@ namespace Plugins.AssetRegister.Runtime
 #endif
 			}
 
-			if (!response.TryGetModel(out Asset asset))
+			if (!response.TryGetModel(out AssetResult assetResult))
 			{
 				Debug.LogError("Couldn't get asset from result");
 #if USING_UNITASK
@@ -106,6 +106,7 @@ namespace Plugins.AssetRegister.Runtime
 #endif
 			}
 
+			var asset = assetResult.Asset;
 			if (!asset.Profiles.TryGetValue("asset-profile", out var profile))
 			{
 				Debug.LogError("Profiles does not contain asset-profile");

@@ -44,4 +44,24 @@ namespace AssetRegister.Runtime.Attributes
 	{
 		public override string TypeName => "Profiles";
 	}
+	
+	internal class BooleanAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "Boolean";
+	}
+
+	internal class FloatAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "Float";
+	}
+	
+	internal class SignatureAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "Signature";
+	}
+	
+	internal class AssetTransactionMessageAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "AssetTransactionMessage";
+	}
 }

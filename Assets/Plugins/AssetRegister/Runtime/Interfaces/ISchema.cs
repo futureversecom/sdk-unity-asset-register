@@ -7,14 +7,11 @@ namespace AssetRegister.Runtime.Interfaces
 	/// </summary>
 	public interface ISchema { }
 	/// <summary>
-	/// Represents a model that can be queried or mutated
-	/// </summary>
-	public interface IModel : ISchema { }
-	/// <summary>
 	/// Represents a GraphQL union type
 	/// </summary>
 	public interface IUnion : ISchema { }
 	public interface IInterface : ISchema { }
+	public interface IResult : ISchema { }
 	/// <summary>
 	/// Represents input to a GraphQL query or mutation
 	/// </summary>

@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq.Expressions;
+using AssetRegister.Runtime.Schema.Objects;
 #if USING_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
@@ -66,44 +67,13 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <param name="value"></param>
 		/// <returns>This builder</returns>
 		TBuilder SetHeader(string headerName, string value);
+
 		/// <summary>
 		/// Shortcut for setting the Authorization header
 		/// </summary>
 		/// <param name="authToken">value of the Authorization header</param>
 		/// <returns>This builder</returns>
 		TBuilder SetAuth(string authToken);
-	}
-
-	/// <summary>
-	/// Top level builder interface for generating queries
-	/// </summary>
-	public interface IQueryBuilder : IRequestBuilder<IQueryBuilder>
-	{
-		/// <summary>
-		/// Add a sub-builder that is generated from a query object
-		/// </summary>
-		/// <param name="query">The query object that the builder is generated from</param>
-		/// <typeparam name="TModel">The type of model that is queried</typeparam>
-		/// <typeparam name="TInput">The type of input required by the query</typeparam>
-		/// <returns>The generated sub-builder</returns>
-		IMemberSubBuilder<IQueryBuilder, TModel> Add<TModel, TInput>(IQuery<TModel, TInput> query)
-			where TModel : IModel where TInput : class, IInput;
-	}
-	
-	/// <summary>
-	/// Top level builder interface for generating mutations
-	/// </summary>
-	public interface IMutationBuilder : IRequestBuilder<IMutationBuilder>
-	{
-		/// <summary>
-		/// Add a sub-builder that is generated from a mutation object
-		/// </summary>
-		/// <param name="mutation">The mutation object that the builder is generated from</param>
-		/// <typeparam name="TModel">The type of model that is affected by the mutation</typeparam>
-		/// <typeparam name="TInput">The type of input required by the mutation</typeparam>
-		/// <returns>The generated sub-builder</returns>
-		IMemberSubBuilder<IMutationBuilder, TModel> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
-			where TModel : IModel where TInput : class, IInput;
 	}
 
 	/// <summary>
@@ -157,5 +127,29 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>Generated sub-builder</returns>
 		public IMemberSubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
 			where TUnionType : class, TUnion;
+	}
+	
+	/// <summary>
+	/// Top level builder interface for generating queries
+	/// </summary>
+	public interface IQueryBuilder : IRequestBuilder<IQueryBuilder>
+	{
+		IMemberSubBuilder<IQueryBuilder, Account> AddAccountsQuery(string[] addresses);
+		IMemberSubBuilder<IQueryBuilder, AssetImagesConnection> AddAssetImagesQuery(
+			string collectionId,
+			string before = default,
+			string after = default,
+			float first = default,
+			float last = default);
+		IMemberSubBuilder<IQueryBuilder, Asset> AddAssetQuery(string collectionId, string tokenId);
+		IMemberSubBuilder<IQueryBuilder, Namespace> AddNamespaceQuery(string @namespace);
+	}
+	
+	/// <summary>
+	/// Top level builder interface for generating mutations
+	/// </summary>
+	public interface IMutationBuilder : IRequestBuilder<IMutationBuilder>
+	{
+		IMemberSubBuilder<IMutationBuilder, Namespace> AddCreateNamespaceMutation(string domain, string suffix);
 	}
 }

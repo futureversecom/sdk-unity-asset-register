@@ -43,5 +43,10 @@ namespace Plugins.AssetRegister.Runtime.Utils
 					return compiled.DynamicInvoke();
 			}
 		}
+		
+		public static object GetDefaultValue(Type type)
+		{
+			return type.IsValueType ? Activator.CreateInstance(type) : null;
+		} 
 	}
 }

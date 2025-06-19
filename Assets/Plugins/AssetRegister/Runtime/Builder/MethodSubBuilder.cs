@@ -38,9 +38,22 @@ namespace AssetRegister.Runtime.Builder
 
             for (var i = 0; i < expression.Arguments.Count; i++)
             {
+                var value = Utils.GetValueFromExpression(expression.Arguments[i]);
+                
+                // Ignore parameter if the value is default
+                if (value == null)
+                {
+                    continue;
+                }
+                
+                var @default = Utils.GetDefaultValue(value.GetType());
+                if (value.Equals(@default))
+                {
+                    continue;
+                }
+                
                 var paramInfo = parameters[i];
                 var parameter = CreateParameterFromInfo(paramInfo);
-                var value = Utils.GetValueFromExpression(expression.Arguments[i]);
 
                 input.Add(parameter.ParameterName, value);
                 parameterList.Add(parameter);
@@ -55,22 +68,38 @@ namespace AssetRegister.Runtime.Builder
             );
         }
 
-        public static MethodSubBuilder<TBuilder, TModel> FromQuery<TModel, TInput>(
+        public static MethodSubBuilder<TBuilder, TSchema> FromQuery<TSchema, TInput>(
             TBuilder parentBuilder,
-            IQuery<TModel, TInput> query) where TModel : IModel where TInput : class, IInput
+            IQuery<TSchema, TInput> query) where TSchema : ISchema where TInput : class, IInput
         {
-            return From<TModel, TInput>(parentBuilder, query.Input);
+            var parameterList = CreateParametersFromInput<TInput>();
+            var mutationName = Utils.GetSchemaName<TSchema>();
+            var token = BuildTokenString(mutationName, parameterList);
+            
+            return new MethodSubBuilder<TBuilder, TSchema>(
+                parentBuilder,
+                token,
+                parameterList,
+                query.Input
+            );
         }
         
-        public static MethodSubBuilder<TBuilder, TModel> FromMutation<TModel, TInput>(
+        public static MethodSubBuilder<TBuilder, TSchema> FromMutation<TSchema, TInput>(
             TBuilder parentBuilder,
-            IMutation<TModel, TInput> mutation) where TModel : IModel where TInput : class, IInput
+            IMutation<TSchema, TInput> mutation) where TSchema : ISchema where TInput : class, IInput
         {
-            return From<TModel, TInput>(parentBuilder, mutation.Input);
+            var parameterList = CreateParametersFromInput<TInput>();
+            var token = BuildTokenString(mutation.FunctionName, parameterList);
+            
+            return new MethodSubBuilder<TBuilder, TSchema>(
+                parentBuilder,
+                token,
+                parameterList,
+                mutation.Input
+            );
         }
 
-        private static MethodSubBuilder<TBuilder, TModel> From<TModel, TInput>(TBuilder parentBuilder, TInput input) 
-            where TModel : IModel where TInput : class, IInput
+        private static List<IParameter> CreateParametersFromInput<TInput>() where TInput : class, IInput
         {
             var inputType = typeof(TInput);
             var fields = inputType.GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -82,14 +111,7 @@ namespace AssetRegister.Runtime.Builder
                 parameterList.Add(parameter);
             }
 
-            var mutationName = Utils.GetSchemaName<TModel>();
-            var token = BuildTokenString(mutationName, parameterList);
-            return new MethodSubBuilder<TBuilder, TModel>(
-                parentBuilder,
-                token,
-                parameterList,
-                input
-            );
+            return parameterList;
         }
 
         private static ParameterData CreateParameterFromInfo(ParameterInfo paramInfo)
@@ -133,7 +155,7 @@ namespace AssetRegister.Runtime.Builder
         private static string BuildTokenString(string methodName, List<IParameter> parameters)
         {
             var args = string.Join(", ", parameters.Select(GetParameterString));
-            return $"{methodName} ({args})";
+            return args.Length == 0 ? methodName : $"{methodName} ({args})";
         }
 
         private static string GetParameterString(IParameter parameter)

@@ -1,6 +1,9 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using AssetRegister.Runtime.Interfaces;
+using AssetRegister.Runtime.Schema.Objects;
+using Plugins.AssetRegister.Runtime.Schema.Mutations;
+using Plugins.AssetRegister.Runtime.Utils;
 
 namespace AssetRegister.Runtime.Builder
 {
@@ -8,12 +11,20 @@ namespace AssetRegister.Runtime.Builder
 	{
 		protected override RequestType RequestType => RequestType.Mutation;
 		
-		public IMemberSubBuilder<IMutationBuilder, TModel> Add<TModel, TInput>(IMutation<TModel, TInput> mutation)
-			where TModel : IModel where TInput : class, IInput
+		public IMemberSubBuilder<IMutationBuilder, TSchema> Add<TSchema, TInput>(IMutation<TSchema, TInput> mutation)
+			where TSchema : ISchema where TInput : class, IInput
 		{
-			var builder = MethodSubBuilder<MutationBuilder, TModel>.FromMutation(this, mutation);
+			var builder = MethodSubBuilder<MutationBuilder, TSchema>.FromMutation(this, mutation);
 			Providers.Add(builder);
-			return builder;
+
+			var innerName = Utils.GetSchemaName<TSchema>();
+			var innerBuilder = new MemberSubBuilder<IMutationBuilder, TSchema>(this, innerName);
+			builder.Children.Add(innerBuilder);
+			
+			return innerBuilder;
 		}
+
+		public IMemberSubBuilder<IMutationBuilder, Namespace> AddCreateNamespaceMutation(string domain, string suffix)
+			=> Add(new CreateNamespaceMutation(domain, suffix));
 	}
 }

@@ -34,23 +34,16 @@ namespace AssetRegister.Runtime.Core
 			return new Response(data, error);
 		}
 
-		public bool TryGetModel<T>(out T model) where T : class, IModel
+		public bool TryGetModel<TResult>(out TResult result) where TResult : class, IResult
 		{
 			if (_data == null)
 			{
-				model = default(T);
-				return false;
-			}
-
-			var name = Utils.GetSchemaName<T>();
-			if (!_data.TryGetValue(name, out var token))
-			{
-				model = default(T);
+				result = default(TResult);
 				return false;
 			}
 			
-			model = token.ToObject<T>();
-			return model != null;
+			result = _data.ToObject<TResult>();
+			return result != null;
 		}
 	}
 }

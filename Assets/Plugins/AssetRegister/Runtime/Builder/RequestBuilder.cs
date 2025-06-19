@@ -56,6 +56,8 @@ namespace AssetRegister.Runtime.Builder
 			query.Append(queryBody);
 			query.Append("}");
 			
+			Debug.Log(query.ToString());
+			
 			return new Request(query.ToString(), inputObject, _headers);
 		}
 		
