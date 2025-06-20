@@ -13,4 +13,6 @@ namespace AssetRegister.Runtime.Interfaces
 	{
 		TInput Input { get; }
 	}
+	
+	public class NoSchema : ISchema { }
 }

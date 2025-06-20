@@ -2,7 +2,9 @@
 
 using System;
 using System.Linq.Expressions;
+using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
+using Plugins.AssetRegister.Runtime.Schema.Interfaces;
 #if USING_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
@@ -143,7 +145,90 @@ namespace AssetRegister.Runtime.Interfaces
 			float last = default);
 		IMemberSubBuilder<IQueryBuilder, Asset> AddAssetQuery(string collectionId, string tokenId);
 		IMemberSubBuilder<IQueryBuilder, Namespace> AddNamespaceQuery(string @namespace);
+	    IMemberSubBuilder<IQueryBuilder, Asset> AddAssetsByIdsQuery(AssetInput[] assetIds);
+	    IMemberSubBuilder<IQueryBuilder, AssetConnection> AddAssetsQuery(
+	        bool? removeDuplicates = default,
+	        Sort[] sort = default,
+	        AssetFilter filter = default,
+	        string schemaId = default,
+	        string[] collectionIds = default,
+	        string[] addresses = default,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default,
+	        string chainId = default,
+	        string chainType = default);
+	    IMemberSubBuilder<IQueryBuilder, Collection> AddCollectionsBySchemaQuery(string schemaId);
+	    IMemberSubBuilder<IQueryBuilder, CollectionConnection> AddCollectionsQuery(
+	        string[] addresses,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, DomainsConnection> AddDomainsQuery(
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, GenericTokenBalance> AddGenericTokenBalancesQuery(
+	        GenericTokenFilter filter = default,
+	        string[] addresses = null,
+	        string[] genericTokenIds = null);
+	    IMemberSubBuilder<IQueryBuilder, NoSchema> AddGetNonceForChainAddressQuery(NonceInput input);
+	    IMemberSubBuilder<IQueryBuilder, NamespacesConnection> AddNamespacesQuery(
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, INode> AddNodeQuery(string id);
+	    IMemberSubBuilder<IQueryBuilder, OffChainAsset> AddOffChainAssetQuery(
+	        string collectionId,
+	        string tokenId = default);
+	    IMemberSubBuilder<IQueryBuilder, OffChainAssetsConnection> AddOffChainAssetsQuery(
+	        OffChainAssetsInput input,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, AssetOwnersConnection> AddOwnersQuery(
+	        string[] collectionIds,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, SchemaCustomDomain> AddSchemaCustomDomainQuery(string domainName);
+	    IMemberSubBuilder<IQueryBuilder, TokenSchema> AddTokenSchemaQuery(
+	        string collectionId,
+	        string tokenId = default);
+	    IMemberSubBuilder<IQueryBuilder, TokenSchemasConnection> AddTokenSchemasQuery(
+	        string collectionId,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, Transaction> AddTransactionQuery(string transactionHash);
+	    IMemberSubBuilder<IQueryBuilder, TransactionsConnection> AddTransactionsQuery(
+	        string address,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, WebhookEndpoint> AddWebhookEndpointQuery(string webhookId);
+	    IMemberSubBuilder<IQueryBuilder, WebhookEndpointsConnection> AddWebhookEndpointsQuery(
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
+	    IMemberSubBuilder<IQueryBuilder, WebhookSubscription> AddWebhookSubscriptionQuery(string subscriptionId);
+	    IMemberSubBuilder<IQueryBuilder, WebhookSubscriptionsConnection> AddWebhookSubscriptionsQuery(
+	        string webhookId,
+	        string before = default,
+	        string after = default,
+	        float first = default,
+	        float last = default);
 	}
+
 	
 	/// <summary>
 	/// Top level builder interface for generating mutations

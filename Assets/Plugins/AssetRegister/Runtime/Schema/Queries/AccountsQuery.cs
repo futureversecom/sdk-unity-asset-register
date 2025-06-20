@@ -33,10 +33,5 @@ namespace AssetRegister.Runtime.Schema.Queries
 		{
 			Input = new AccountsInput(addresses);
 		}
-		
-		public AccountsQuery()
-		{
-			
-		}
 	}
 }

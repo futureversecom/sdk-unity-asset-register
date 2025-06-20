@@ -2,26 +2,12 @@
 
 using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Interfaces;
+using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
 using Newtonsoft.Json;
 
 namespace AssetRegister.Runtime.Schema.Queries
 {
-	[JsonObject]
-	public sealed class AssetInput : IInput
-	{
-		[String, Required, JsonProperty("tokenId")]
-		public string TokenId;
-		[CollectionId, Required, JsonProperty("collectionId")]
-		public string CollectionId;
-
-		public AssetInput(string collectionId, string tokenId)
-		{
-			CollectionId = collectionId;
-			TokenId = tokenId;
-		}
-	}
-	
 	[JsonObject]
 	public sealed class AssetResult : IResult
 	{

@@ -79,4 +79,9 @@ namespace AssetRegister.Runtime.Attributes
 	{
 		public override string TypeName => "PropertyValue";
 	}
+	
+	internal class GenericTokenIdAttribute : GraphQLTypeAttribute
+	{
+		public override string TypeName => "GenericTokenId";
+	}
 }

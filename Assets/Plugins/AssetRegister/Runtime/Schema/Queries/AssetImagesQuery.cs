@@ -45,10 +45,5 @@ namespace AssetRegister.Runtime.Schema.Queries
 		{
 			Input = new AssetImagesInput(collectionId, before, after, first, last);
 		}
-		
-		public AssetImagesQuery()
-		{
-			
-		}
 	}
 }

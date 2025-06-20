@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Plugins.AssetRegister.Runtime.Utils
 {
-	internal class UnionConverter : JsonConverter
+	internal abstract class AbstractConverter<T> : JsonConverter
     {
         private static readonly Dictionary<Type, Dictionary<string, Type>> s_typeMaps = new();
 
@@ -20,9 +20,9 @@ namespace Plugins.AssetRegister.Runtime.Utils
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (!typeof(IUnion).IsAssignableFrom(objectType))
+            if (!typeof(T).IsAssignableFrom(objectType))
             {
-                throw new JsonSerializationException($"{objectType.Name} must implement IUnion to be used with UnionConverter.");
+                throw new JsonSerializationException($"{objectType.Name} must implement {typeof(T).Name} to be used with this converter.");
             }
 
             var jo = JObject.Load(reader);
@@ -30,7 +30,7 @@ namespace Plugins.AssetRegister.Runtime.Utils
 
             if (string.IsNullOrEmpty(typeName))
             {
-                throw new JsonSerializationException("Missing '__typename' field for union deserialization.");
+                throw new JsonSerializationException($"Missing '__typename' field for {typeof(T).Name} deserialization.");
             }
 
             if (!s_typeMaps.TryGetValue(objectType, out var typeMap))
@@ -41,7 +41,7 @@ namespace Plugins.AssetRegister.Runtime.Utils
 
             if (!typeMap.TryGetValue(typeName, out var targetType))
             {
-                throw new JsonSerializationException($"Unknown __typename '{typeName}' for union type '{objectType.Name}'.");
+                throw new JsonSerializationException($"Unknown __typename '{typeName}' for type '{objectType.Name}'.");
             }
 
             return jo.ToObject(targetType, serializer)!;
@@ -72,4 +72,7 @@ namespace Plugins.AssetRegister.Runtime.Utils
             return map;
         }
     }
+    
+    internal class UnionConverter : AbstractConverter<IUnion> { }
+    internal class InterfaceConverter : AbstractConverter<IInterface> { }
 }

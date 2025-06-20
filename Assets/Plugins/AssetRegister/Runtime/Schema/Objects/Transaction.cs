@@ -20,5 +20,5 @@ namespace AssetRegister.Runtime.Schema.Objects
 	[JsonObject]
 	public sealed class TransactionEdge : EdgeBase<Transaction> { }
 	[JsonObject]
-	public sealed class TransactionConnection : ConnectionBase<TransactionEdge> { }
+	public sealed class TransactionsConnection : ConnectionBase<TransactionEdge> { }
 }
