@@ -1,3 +1,12 @@
+## [0.4.3](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.2...v0.4.3) (2025-06-23)
+
+
+### Bug Fixes
+
+* Turned query names into constants ([8baf23c](https://github.com/futureversecom/sdk-unity-asset-register/commit/8baf23ca120045dde3ba3854ec03873472cfe24b))
+
+
+
 ## [0.4.2](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.1...v0.4.2) (2025-06-23)
 
 
