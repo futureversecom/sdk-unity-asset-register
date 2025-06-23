@@ -28,6 +28,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class TransactionQuery : IQuery<Transaction, TransactionInput>
 	{
+		public string QueryName => "transaction";
 		public TransactionInput Input { get; }
 
 		public TransactionQuery(string transactionHash)

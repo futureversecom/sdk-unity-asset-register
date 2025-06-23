@@ -46,6 +46,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class OwnersQuery : IQuery<AssetOwnersConnection, OwnersInput>
 	{
+		public string QueryName => "owners";
 		public OwnersInput Input { get; }
 
 		public OwnersQuery(

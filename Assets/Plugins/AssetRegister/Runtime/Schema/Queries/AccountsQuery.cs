@@ -27,6 +27,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 	
 	internal class AccountsQuery : IQuery<Account, AccountsInput>
 	{
+		public string QueryName => "accounts";
 		public AccountsInput Input { get; }
 		
 		public AccountsQuery(string[] addresses)

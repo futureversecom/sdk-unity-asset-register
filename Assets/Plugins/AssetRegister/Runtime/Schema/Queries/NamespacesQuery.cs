@@ -42,6 +42,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class NamespacesQuery : IQuery<NamespacesConnection, NamespacesInput>
 	{
+		public string QueryName => "namespaces";
 		public NamespacesInput Input { get; }
 
 		public NamespacesQuery(

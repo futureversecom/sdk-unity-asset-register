@@ -28,6 +28,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class CollectionsBySchemaQuery : IQuery<Collection, CollectionsBySchemaInput>
 	{
+		public string QueryName => "collectionsBySchema";
 		public CollectionsBySchemaInput Input { get; }
 
 		public CollectionsBySchemaQuery(string schemaId)

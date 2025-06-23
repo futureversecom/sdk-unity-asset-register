@@ -46,6 +46,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class CollectionsQuery : IQuery<CollectionConnection, CollectionsInput>
 	{
+		public string QueryName => "collections";
 		public CollectionsInput Input { get; }
 
 		public CollectionsQuery(

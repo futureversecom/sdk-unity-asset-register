@@ -11,6 +11,7 @@ namespace AssetRegister.Runtime.Interfaces
 		where TSchema : ISchema
 		where TInput : class, IInput
 	{
+		string QueryName { get; }
 		TInput Input { get; }
 	}
 	

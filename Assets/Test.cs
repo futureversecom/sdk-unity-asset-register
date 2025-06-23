@@ -9,7 +9,7 @@ using UnityEngine;
 		public void Start()
 		{
 			var request = AR.NewQueryBuilder()
-				.AddAssetsQuery()
+				.AddAssetsQuery(collectionIds:new string[] {""})
 					.WithArray<AssetEdge, AssetEdge[]>(a => a.Edges)
 						.WithField(e => e.Node)	
 				.Build();

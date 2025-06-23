@@ -67,8 +67,7 @@ namespace AssetRegister.Runtime.Builder
             IQuery<TSchema, TInput> query) where TSchema : ISchema where TInput : class, IInput
         {
             var parameterList = CreateParametersFromInput(query.Input);
-            var mutationName = Utils.GetSchemaName<TSchema>();
-            var token = BuildTokenString(mutationName, parameterList);
+            var token = BuildTokenString(query.QueryName, parameterList);
             
             return new MethodSubBuilder<TBuilder, TSchema>(
                 parentBuilder,

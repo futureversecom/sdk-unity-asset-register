@@ -16,6 +16,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 	
 	internal class AssetQuery : IQuery<Asset, AssetInput>
 	{
+		public string QueryName => "asset";
 		public AssetInput Input { get; }
 		
 		internal AssetQuery(string collectionId, string tokenId)

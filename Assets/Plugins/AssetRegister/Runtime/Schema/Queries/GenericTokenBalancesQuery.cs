@@ -39,6 +39,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class GenericTokenBalancesQuery : IQuery<GenericTokenBalance, GenericTokenBalancesInput>
 	{
+		public string QueryName => "genericTokenBalances";
 		public GenericTokenBalancesInput Input { get; }
 
 		public GenericTokenBalancesQuery(

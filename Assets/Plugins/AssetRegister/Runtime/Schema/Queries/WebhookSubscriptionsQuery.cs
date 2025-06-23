@@ -46,6 +46,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class WebhookSubscriptionsQuery : IQuery<WebhookSubscriptionsConnection, WebhookSubscriptionsInput>
 	{
+		public string QueryName => "webhookSubscriptions";
 		public WebhookSubscriptionsInput Input { get; }
 
 		public WebhookSubscriptionsQuery(

@@ -28,6 +28,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class WebhookEndpointQuery : IQuery<WebhookEndpoint, WebhookEndpointInput>
 	{
+		public string QueryName => "webhookEndpoint";
 		public WebhookEndpointInput Input { get; }
 
 		public WebhookEndpointQuery(string webhookId)

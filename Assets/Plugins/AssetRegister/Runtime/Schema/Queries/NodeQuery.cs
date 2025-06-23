@@ -29,6 +29,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class NodeQuery : IQuery<INode, NodeInput>
 	{
+		public string QueryName => "node";
 		public NodeInput Input { get; }
 
 		public NodeQuery(string id)

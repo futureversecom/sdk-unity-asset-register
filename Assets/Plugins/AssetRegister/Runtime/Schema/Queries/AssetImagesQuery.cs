@@ -39,6 +39,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 	
 	internal class AssetImagesQuery : IQuery<AssetImagesConnection, AssetImagesInput>
 	{
+		public string QueryName => "assetImages";
 		public AssetImagesInput Input { get; }
 		
 		public AssetImagesQuery(string collectionId, string before = default, string after = default, float first = default, float last = default)

@@ -42,6 +42,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class DomainsQuery : IQuery<DomainsConnection, DomainsInput>
 	{
+		public string QueryName => "domains";
 		public DomainsInput Input { get; }
 
 		public DomainsQuery(

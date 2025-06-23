@@ -31,6 +31,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class TokenSchemaQuery : IQuery<TokenSchema, TokenSchemaInput>
 	{
+		public string QueryName => "TokenSchema";
 		public TokenSchemaInput Input { get; }
 
 		public TokenSchemaQuery(string collectionId, string tokenId = default)

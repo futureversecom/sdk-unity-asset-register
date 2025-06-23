@@ -31,6 +31,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class OffChainAssetQuery : IQuery<OffChainAsset, OffChainAssetInput>
 	{
+		public string QueryName => "offChainAsset";
 		public OffChainAssetInput Input { get; }
 
 		public OffChainAssetQuery(string collectionId, string tokenId = default)

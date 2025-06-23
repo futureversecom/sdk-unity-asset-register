@@ -28,6 +28,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class SchemaCustomDomainQuery : IQuery<SchemaCustomDomain, SchemaCustomDomainInput>
 	{
+		public string QueryName => "schemaCustomDomain";
 		public SchemaCustomDomainInput Input { get; }
 
 		public SchemaCustomDomainQuery(string domainName)

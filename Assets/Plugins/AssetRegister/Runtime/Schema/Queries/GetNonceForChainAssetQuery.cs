@@ -28,6 +28,7 @@ namespace AssetRegister.Runtime.Schema.Queries
 
 	internal class GetNonceForChainAddressQuery : IQuery<NoSchema, GetNonceForChainAddressInput>
 	{	
+		public string QueryName => "getNonceForChainAddress";
 		public GetNonceForChainAddressInput Input { get; }
 
 		public GetNonceForChainAddressQuery(NonceInput input)
