@@ -8,7 +8,7 @@ namespace AssetRegister.Runtime.Schema.Objects
 	[JsonObject]
 	public abstract class ConnectionBase<T> : ISchema where T : ISchema
 	{
-		[JsonProperty("edges")] public AssetImageEdge[] Edges;
+		[JsonProperty("edges")] public T[] Edges;
 		[JsonProperty("pageInfo")] public PageInfo PageInfo;
 		[JsonProperty("total")] public float Total;
 	}
