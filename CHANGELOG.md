@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.0...v0.4.1) (2025-06-23)
+
+
+### Bug Fixes
+
+* Also ignore default parameters for query and mutation methods ([3e0e824](https://github.com/futureversecom/sdk-unity-asset-register/commit/3e0e824caf62deb6e715c929b5aef4c6988d146f))
+
+
+
 # [0.4.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.3.0...v0.4.0) (2025-06-23)
 
 
