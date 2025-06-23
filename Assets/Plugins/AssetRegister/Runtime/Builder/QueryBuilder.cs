@@ -26,21 +26,6 @@ namespace AssetRegister.Runtime.Builder
 		public IMemberSubBuilder<IQueryBuilder, Namespace> AddNamespaceQuery(string @namespace)
 			=> Add(new NamespaceQuery(@namespace));
 
-        public IMemberSubBuilder<IQueryBuilder, AssetConnection> AddAssetsQuery(
-            bool? removeDuplicates = default,
-            Sort[] sort = default,
-            AssetFilter filter = default,
-            string schemaId = default,
-            string[] collectionIds = default,
-            string[] addresses = default,
-            string before = default,
-            string after = default,
-            float first = default,
-            float last = default,
-            string chainId = default,
-            string chainType = default)
-            => throw new System.NotImplementedException();
-
         public IMemberSubBuilder<IQueryBuilder, AssetImagesConnection> AddAssetImagesQuery(
             string collectionId,
             string before = default,
