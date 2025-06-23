@@ -1,3 +1,18 @@
+# [0.4.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.3.0...v0.4.0) (2025-06-23)
+
+
+### Bug Fixes
+
+* Incorrect type ([d624e9b](https://github.com/futureversecom/sdk-unity-asset-register/commit/d624e9b8b7c70e5732af9ed3de12cf2540770d41))
+* Removed duplicate function ([bbc6a36](https://github.com/futureversecom/sdk-unity-asset-register/commit/bbc6a36a84f6c35478d9daf2f9c573051ffe27fb))
+
+
+### Features
+
+* Added WithArray method to MemberSubBuilder ([e966919](https://github.com/futureversecom/sdk-unity-asset-register/commit/e96691920dfd002d2a71655af47c03eaa35179a7))
+
+
+
 # [0.3.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.2.0...v0.3.0) (2025-06-23)
 
 
