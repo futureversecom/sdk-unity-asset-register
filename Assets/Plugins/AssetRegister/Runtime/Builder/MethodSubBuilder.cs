@@ -66,7 +66,7 @@ namespace AssetRegister.Runtime.Builder
             TBuilder parentBuilder,
             IQuery<TSchema, TInput> query) where TSchema : ISchema where TInput : class, IInput
         {
-            var parameterList = CreateParametersFromInput<TInput>();
+            var parameterList = CreateParametersFromInput(query.Input);
             var mutationName = Utils.GetSchemaName<TSchema>();
             var token = BuildTokenString(mutationName, parameterList);
             
@@ -82,7 +82,7 @@ namespace AssetRegister.Runtime.Builder
             TBuilder parentBuilder,
             IMutation<TSchema, TInput> mutation) where TSchema : ISchema where TInput : class, IInput
         {
-            var parameterList = CreateParametersFromInput<TInput>();
+            var parameterList = CreateParametersFromInput(mutation.Input);
             var token = BuildTokenString(mutation.FunctionName, parameterList);
             
             return new MethodSubBuilder<TBuilder, TSchema>(
@@ -93,7 +93,7 @@ namespace AssetRegister.Runtime.Builder
             );
         }
 
-        private static List<IParameter> CreateParametersFromInput<TInput>() where TInput : class, IInput
+        private static List<IParameter> CreateParametersFromInput<TInput>(TInput input) where TInput : class, IInput
         {
             var inputType = typeof(TInput);
             var fields = inputType.GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -101,6 +101,12 @@ namespace AssetRegister.Runtime.Builder
 
             foreach (var field in fields)
             {
+                var value = field.GetValue(input);
+                if (value == null || value.Equals(Utils.GetDefaultValue(value.GetType())))
+                {
+                    continue;
+                }
+                
                 var parameter = CreateParameterFromField(field);
                 parameterList.Add(parameter);
             }
