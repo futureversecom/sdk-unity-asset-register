@@ -141,7 +141,7 @@ namespace AssetRegister.Runtime.Builder
             var typeName = typeAttribute?.TypeName ?? field.FieldType.Name;
             if (field.FieldType.IsArray)
             {
-                typeName = $"[{typeName}]";
+                typeName = $"[{typeName}!]";
             }
             if (requiredAttribute != null)
             {
