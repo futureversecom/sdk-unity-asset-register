@@ -1,3 +1,12 @@
+## [0.4.2](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.1...v0.4.2) (2025-06-23)
+
+
+### Bug Fixes
+
+* Array elements are non-null by default ([6d41aea](https://github.com/futureversecom/sdk-unity-asset-register/commit/6d41aea6dac5ecab10dd0b41d257dbc19844f8b7))
+
+
+
 ## [0.4.1](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.0...v0.4.1) (2025-06-23)
 
 
