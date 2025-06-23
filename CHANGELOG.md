@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.2.0...v0.3.0) (2025-06-23)
+
+
+### Features
+
+* Simplified request builder API. Now get response models via IResult objects ([6374a33](https://github.com/futureversecom/sdk-unity-asset-register/commit/6374a33d4b170f4f50eec829654213eace691354))
+
+
+
 # [0.2.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.1.0...v0.2.0) (2025-06-11)
 
 
