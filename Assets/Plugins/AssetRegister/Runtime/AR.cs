@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using AssetRegister.Runtime.Builder;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using AssetRegister.Runtime.Schema.Objects;
 using AssetRegister.Runtime.Schema.Queries;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -78,8 +77,8 @@ namespace Plugins.AssetRegister.Runtime
 		public static IEnumerator GetAssetProfileUrl(IClient client, string collectionId, string tokenId, Action<string> callback = null)
 		{
 			IResponse response = null;
-			yield return NewQuery()
-				.Add(new AssetQuery(collectionId, tokenId))
+			yield return NewQueryBuilder()
+				.AddAssetQuery(collectionId, tokenId)
 					.WithField((a => a.Profiles))
 				.Execute(client, r => response = r);
 #endif
