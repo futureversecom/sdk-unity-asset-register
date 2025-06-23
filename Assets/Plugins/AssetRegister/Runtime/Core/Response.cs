@@ -4,7 +4,6 @@ using System.Linq;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Plugins.AssetRegister.Runtime.Utils;
 
 namespace AssetRegister.Runtime.Core
 {

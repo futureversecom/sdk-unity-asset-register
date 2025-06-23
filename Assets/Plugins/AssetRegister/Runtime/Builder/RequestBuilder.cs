@@ -7,7 +7,6 @@ using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json.Linq;
 using Plugins.AssetRegister.Runtime.Utils;
-using UnityEngine;
 #if USING_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
