@@ -8,6 +8,6 @@ namespace AssetRegister.Runtime.Schema.Objects
 	[JsonObject]
 	public class NodeBase : INode
 	{
-		[JsonProperty("id")] public string Id { get; }
+		[JsonProperty("id")] public string Id { get; protected set; }
 	}
 }
