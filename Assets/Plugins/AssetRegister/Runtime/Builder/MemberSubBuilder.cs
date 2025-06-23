@@ -39,9 +39,27 @@ namespace AssetRegister.Runtime.Builder
 			return this;
 		}
 
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> fieldSelector)
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithArray<TField, TArray>(
+			Expression<Func<TType, TArray>> arraySelector)
+			where TArray : IEnumerable<TField>
 		{
-			if (fieldSelector.Body is not MethodCallExpression methodExpression)
+			if (arraySelector.Body is not MemberExpression memberExpression || !memberExpression.Type.IsArray)
+			{
+				throw new ArgumentException(".WithArray() expression must end with an array type");
+			}
+			
+			var attribute = memberExpression.Member.GetCustomAttribute<JsonPropertyAttribute>();
+			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
+
+			var token = ProcessPath(memberExpression.Expression);
+			var builder = new MemberSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			token.Children.Add(builder);
+			return builder;
+		}
+
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> methodSelector)
+		{
+			if (methodSelector.Body is not MethodCallExpression methodExpression)
 			{
 				throw new ArgumentException(".WithMethod() expression must end with a method call");
 			}
@@ -57,9 +75,9 @@ namespace AssetRegister.Runtime.Builder
 		}
 
 		public IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithUnion<TField>(
-			Expression<Func<TType, TField>> fieldSelector) where TField : class, IUnion
+			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion
 		{
-			if (fieldSelector.Body is not MemberExpression memberExpression)
+			if (unionSelector.Body is not MemberExpression memberExpression)
 			{
 				throw new ArgumentException(".WithUnion() expression must end with a Union type");
 			}

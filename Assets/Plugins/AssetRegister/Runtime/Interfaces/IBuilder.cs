@@ -1,6 +1,7 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
@@ -96,22 +97,31 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>This builder</returns>
 		IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector);
 		/// <summary>
+		/// Add an array type member from this member to the query
+		/// </summary>
+		/// <param name="arraySelector">Expression that returns an array type</param>
+		/// <typeparam name="TField">The non-array type that the generated sub-builder should track</typeparam>
+		/// <typeparam name="TArray">The return type of the expression. Must be an array of TField</typeparam>
+		/// <returns>The generated sub-builder</returns>
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithArray<TField, TArray>(
+			Expression<Func<TType, TArray>> arraySelector) where TArray : IEnumerable<TField>;
+		/// <summary>
 		/// Add a method from this member type to the query
 		/// </summary>
-		/// <param name="fieldSelector">Expression that returns a method call from the member type.
+		/// <param name="methodSelector">Expression that returns a method call from the member type.
 		/// e.g. if TType is SFTAssetOwnership, fieldSelector can be sft => sft.balanceOf("")
 		/// </param>
 		/// <typeparam name="TField">Return type of the method that is selected by the fieldSelector expression</typeparam>
 		/// <returns>The generated sub-builder</returns>
-		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> fieldSelector);
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> methodSelector);
 		/// <summary>
 		/// Adds a union from this member type to the query
 		/// </summary>
-		/// <param name="fieldSelector">Expression that returns a member of Union type from the member</param>
+		/// <param name="unionSelector">Expression that returns a member of Union type from the member</param>
 		/// <typeparam name="TField">The union type that is selected by the fieldSelector expression. Must derive IUnion</typeparam>
 		/// <returns>The generated sub-builder</returns>
 		IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithUnion<TField>(
-			Expression<Func<TType, TField>> fieldSelector) where TField : class, IUnion;
+			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion;
 	}
 
 	/// <summary>
@@ -147,7 +157,7 @@ namespace AssetRegister.Runtime.Interfaces
 		IMemberSubBuilder<IQueryBuilder, Namespace> AddNamespaceQuery(string @namespace);
 	    IMemberSubBuilder<IQueryBuilder, Asset> AddAssetsByIdsQuery(AssetInput[] assetIds);
 	    IMemberSubBuilder<IQueryBuilder, AssetConnection> AddAssetsQuery(
-	        bool? removeDuplicates = default,
+	        bool removeDuplicates = default,
 	        Sort[] sort = default,
 	        AssetFilter filter = default,
 	        string schemaId = default,
