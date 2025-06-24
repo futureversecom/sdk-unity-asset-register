@@ -39,13 +39,12 @@ namespace AssetRegister.Runtime.Builder
 			return this;
 		}
 
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithArray<TField, TArray>(
-			Expression<Func<TType, TArray>> arraySelector)
-			where TArray : IEnumerable<TField>
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMember<TField>(
+			Expression<Func<TType, TField>> memberSelector)
 		{
-			if (arraySelector.Body is not MemberExpression memberExpression || !memberExpression.Type.IsArray)
+			if (memberSelector.Body is not MemberExpression memberExpression)
 			{
-				throw new ArgumentException(".WithArray() expression must end with an array type");
+				throw new ArgumentException(".OnMember() expression must end with a member type");
 			}
 			
 			var attribute = memberExpression.Member.GetCustomAttribute<JsonPropertyAttribute>();
@@ -57,11 +56,29 @@ namespace AssetRegister.Runtime.Builder
 			return builder;
 		}
 
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> methodSelector)
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnArray<TField, TArray>(
+			Expression<Func<TType, TArray>> arraySelector)
+			where TArray : IEnumerable<TField>
+		{
+			if (arraySelector.Body is not MemberExpression memberExpression || !memberExpression.Type.IsArray)
+			{
+				throw new ArgumentException(".OnArray() expression must end with an array type");
+			}
+			
+			var attribute = memberExpression.Member.GetCustomAttribute<JsonPropertyAttribute>();
+			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
+
+			var token = ProcessPath(memberExpression.Expression);
+			var builder = new MemberSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			token.Children.Add(builder);
+			return builder;
+		}
+
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMethod<TField>(Expression<Func<TType, TField>> methodSelector)
 		{
 			if (methodSelector.Body is not MethodCallExpression methodExpression)
 			{
-				throw new ArgumentException(".WithMethod() expression must end with a method call");
+				throw new ArgumentException(".OnMethod() expression must end with a method call");
 			}
 
 			var token = ProcessPath(methodExpression.Object);
@@ -74,12 +91,12 @@ namespace AssetRegister.Runtime.Builder
 			return builder;
 		}
 
-		public IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithUnion<TField>(
+		public IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnUnion<TField>(
 			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion
 		{
 			if (unionSelector.Body is not MemberExpression memberExpression)
 			{
-				throw new ArgumentException(".WithUnion() expression must end with a Union type");
+				throw new ArgumentException(".OnUnion() expression must end with a Union type");
 			}
 
 			if ((memberExpression.Member is FieldInfo fieldInfo &&
@@ -87,7 +104,7 @@ namespace AssetRegister.Runtime.Builder
 				(memberExpression.Member is PropertyInfo propertyInfo &&
 				!typeof(IUnion).IsAssignableFrom(propertyInfo.PropertyType)))
 			{
-				throw new ArgumentException(".WithUnion() expression must end with a Union type");
+				throw new ArgumentException(".OnUnion() expression must end with a Union type");
 			}
 
 			var attribute = memberExpression.Member.GetCustomAttribute<JsonPropertyAttribute>();
@@ -106,7 +123,7 @@ namespace AssetRegister.Runtime.Builder
 			{
 				if (expression is not MemberExpression memberExpression)
 				{
-					throw new ArgumentException("Used .WithField() with non-member expression. Use WithMethod instead");
+					throw new ArgumentException("Non-member path provided");
 				}
 				
 				var member = memberExpression.Member; 

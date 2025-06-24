@@ -97,13 +97,22 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>This builder</returns>
 		IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector);
 		/// <summary>
+		/// Add a field from this member type to the query. Generates a sub builder where TType is TField
+		/// </summary>
+		/// <param name="memberSelector">Expression that returns a field from the member type.
+		/// e.g. if TType is Asset, fieldSelector can be (Asset a) => a.TokenId, or simply a => a.TokenId
+		/// </param>
+		/// <typeparam name="TField">Type of the member that is selected by the fieldSelector expression</typeparam>
+		/// <returns>The generated sub-builder</returns>
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMember<TField>(Expression<Func<TType, TField>> memberSelector);
+		/// <summary>
 		/// Add an array type member from this member to the query
 		/// </summary>
 		/// <param name="arraySelector">Expression that returns an array type</param>
 		/// <typeparam name="TField">The non-array type that the generated sub-builder should track</typeparam>
 		/// <typeparam name="TArray">The return type of the expression. Must be an array of TField</typeparam>
 		/// <returns>The generated sub-builder</returns>
-		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithArray<TField, TArray>(
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnArray<TField, TArray>(
 			Expression<Func<TType, TArray>> arraySelector) where TArray : IEnumerable<TField>;
 		/// <summary>
 		/// Add a method from this member type to the query
@@ -113,14 +122,14 @@ namespace AssetRegister.Runtime.Interfaces
 		/// </param>
 		/// <typeparam name="TField">Return type of the method that is selected by the fieldSelector expression</typeparam>
 		/// <returns>The generated sub-builder</returns>
-		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithMethod<TField>(Expression<Func<TType, TField>> methodSelector);
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMethod<TField>(Expression<Func<TType, TField>> methodSelector);
 		/// <summary>
 		/// Adds a union from this member type to the query
 		/// </summary>
 		/// <param name="unionSelector">Expression that returns a member of Union type from the member</param>
 		/// <typeparam name="TField">The union type that is selected by the fieldSelector expression. Must derive IUnion</typeparam>
 		/// <returns>The generated sub-builder</returns>
-		IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> WithUnion<TField>(
+		IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnUnion<TField>(
 			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion;
 	}
 
