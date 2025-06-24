@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.4...v0.5.0) (2025-06-24)
+
+
+### Features
+
+* Renamed With_ methods to On_ to distinguish them from WithField. Added OnMember to help clean up longer requests ([91b1c64](https://github.com/futureversecom/sdk-unity-asset-register/commit/91b1c646e258c1772f85ecad1719dda54f5fbd4f))
+
+
+
 ## [0.4.4](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.3...v0.4.4) (2025-06-23)
 
 
