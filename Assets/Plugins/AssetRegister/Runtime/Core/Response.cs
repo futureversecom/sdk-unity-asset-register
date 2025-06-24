@@ -33,7 +33,7 @@ namespace AssetRegister.Runtime.Core
 			return new Response(data, error);
 		}
 
-		public bool TryGetModel<TResult>(out TResult result) where TResult : class, IResult
+		public bool TryGetResult<TResult>(out TResult result) where TResult : class, IResult
 		{
 			if (_data == null)
 			{

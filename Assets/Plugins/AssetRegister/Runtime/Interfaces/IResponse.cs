@@ -21,6 +21,6 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <param name="result">The resulting model</param>
 		/// <typeparam name="TResult">The type of model to retrieve</typeparam>
 		/// <returns></returns>
-		bool TryGetModel<TResult>(out TResult result) where TResult : class, IResult;
+		bool TryGetResult<TResult>(out TResult result) where TResult : class, IResult;
 	}
 }
