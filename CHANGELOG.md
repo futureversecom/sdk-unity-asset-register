@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.3...v0.4.4) (2025-06-23)
+
+
+### Bug Fixes
+
+* Json property being readonly ([b06b346](https://github.com/futureversecom/sdk-unity-asset-register/commit/b06b346c2bf9f6bb162dc61e35c4ae54ae4c19e4))
+
+
+
 ## [0.4.3](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.2...v0.4.3) (2025-06-23)
 
 
