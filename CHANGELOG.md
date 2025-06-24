@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.5.0...v0.6.0) (2025-06-24)
+
+
+### Features
+
+* Renamed TryGetModel to TryGetResult ([aa14261](https://github.com/futureversecom/sdk-unity-asset-register/commit/aa14261f71f1c7ed0eb55bb0e0003de260532020))
+
+
+
 # [0.5.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.4.4...v0.5.0) (2025-06-24)
 
 
