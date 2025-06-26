@@ -11,10 +11,6 @@ Go to the Unity Package Manager window, and select `Add package from git URL...`
 
 To use it in your project, you will need to include the AssetRegister.Runtime Assembly Definition.
 
-### Samples
-
-When installing through the Unity Package Manager, you can choose to install the Asset Sample in the Samples tab. This contains a test scene and two basic scripts showing how to send a query and a mutation.
-
 ### UniTask Compatibility
 
 The Asset Register SDK uses asynchronous methods to make web requests. It uses coroutines, so you must call yield return when using them. But through use of Version Defines, if you have [UniTask](https://github.com/Cysharp/UniTask) installed, it will change the signature of those asynchronous methods to use UniTask, so you can await them, and pass in a cancellation token instead of a callback.
@@ -150,6 +146,15 @@ You can also chain members together in the Expression, e.g. `a => a.Collection.C
 
 It is never necessary to use `.OnMember()`, but it is useful when you have many nested fields to add, and can help to make your request builder more readable.
 
+### Arrays
+When using `.WithField()`, you will likely come accross an array type, and may think to do something like this: `.WithField(a => a.Items[0].Content)`. This will not work, but `IMemberSubBuilder` comes with `.WithArray()` that enables you to add fields from an array in the request. Using this, we can transform the incorrect code into the proper solution:
+
+```csharp
+.OnArray(a => a.Items)
+  .WithField(i => i.Content)
+  .Done()
+```
+
 ### Methods
 
 An `IMemberSubBuilder` can also call `.OnMethod()`. Some GraphQL queries can call sub-methods within the hierarchy of the query. An example of this is `SFTAssetOwnership`, which has a method called `balanceOf`. `balanceOf` takes a string input is a parameter. Using `.OnMethod()`, you can call `balanceOf` at the end of the method chain, e.g. in a `IMemberSubBuilder` where `TType` is `SFTAssetOwnership`, you can call `.OnMethod(sft => sft.balanceOf("some address"))`.
@@ -195,7 +200,10 @@ var request = AR.NewQueryBuilder()
       .Done()
     .OnUnion(a => a.Ownership)
       .On<NFTAssetOwnership>()
-        .WithField(nft => nft.Owner.Handle)
+        .OnArray<Link, Link[]>(nft => nft.ChildLinks)
+          .WithField(l => l.Asset.Id)
+          .WithField(l => l.Path)
+          .Done()
         .Done()
       .On<SFTAssetOwnership>()
         .OnMethod(sft => sft.balanceOf(_address))
@@ -206,15 +214,16 @@ IResponse response = null;
 yield return _client.SendRequest(request, r => response = r);
 ```
 
+> [!TIP]
+> You can see the [equivalent request](https://ar-api.futureverse.cloud/graphql?explorerURLState=N4IgJg9gxgrgtgUwHYBcQC4QEcYIE4CeABAIIDOZCKAFACQoQDWyAkmOkQMop4CWSAcwCEAGiK0oEADZSEUFLwhI2HAMLTZ8xcrCjxAQzBg8CCmoAW%2B-iSMmKQgJRFgAHSREi%2BilWoNmOjnomVjAxSRk5BSUVcXDNKJ0nV3cPIj8Qt1SiOMjtZ0ys7Mt%2BNgKPAF8yoggAdyR8MnNeAAdkwqIAOi6lIgA5ADEAFXJKFAB5Ooam5vyU9tr6vFn2rMskMFkqrMq51J32ro6eziGRqgnFxpbllYAjfSl9JCgEMYAzakNjUzJAr7syEktoV7o9nghgRVgfs9gUduUQCIQAA3fR8fS3WRkDAgYAeFx4AouEDpHTEjjE4kiAlEkA5LTRMDkoiUxE0lLE-4-Zms9kI8pAA) in the Futureverse GraphQL Sandbox.
+
 Some things to note about this example:
 * The `Done()` method is called to return the parent builder, letting you call multiple `.On<>` methods for the `Ownership` union or continue adding fields to the Asset after adding the Collection fields.
 * For any sub-builder, calling `.Build()` will simply call `Build` on the parent builder. This means you don't have to chain multiple `Build()` calls at the end of the query, you just call it once. This applies to the `.Execute()` method as well.
+* Sometimes, `.OnArray()` cannot infer the type. In this case, like above, you will have to explicitly set the generic parameters of the `.OnArray()` method. They should always be the singular type of the array member, followed by the array type, in this case `<Link, Link[]>`.
 * `.Build()` is used here instead of the `.Execute()` shorthand you saw in the first example. This returns an `IRequest` object, which is then passed into the client's `SendRequest()` method.
 * `.OnMember()` is not necessary, as we could just as easily call `.WithField(a => a.Collection.ChainType)` and `.WithField(a => a.Collection.ChainID)`, but it helps to organize the request builder and make it more readable.
 * Speaking of readable, the indenting you see here does not happen by default, but it is recommended to increase the indent level after each `.On...()` call, and return one indent level after each `.Done()` call. This makes it a lot easier to see the structure of the request clearly.
-
-> [!TIP]
-> You can see the [equivalent request](https://ar-api.futureverse.cloud/graphql?explorerURLState=N4IgJg9gxgrgtgUwHYBcQC4QEcYIE4CeABAIIDOZCKAFACQoQDWyAkmOkQMop4CWSAcwCEAGiK0oEADZSEUFLwhI2HAMLTZ8xcrCjxAQzBg8CCmoAW%2B-iSMmKQgJRFgAHSREi%2BilWoNmOjnomVjAxSRk5BSUVcXDNKJ0nV3cPIj8Qt1SiOMjtZ0ys7Mt%2BNgKPAF8yoggAdyR8MnNeAAdkwqIAOi6lIgA5ADEAFXJKFAB5Ooam5vyU9tr6vFn2rMskMFkqrMq51J32ro6eziGRqgnFxpbllYAjfSl9JCgEMYAzakNjUzJAr7syEktoV7o9nghgRVgfs9gUduUQCIQAA3fR8fS3WRkDAgYAeFx4AouEDpHTEjjE4kiAlEkA5LTRMDkoiUxE0lLE-4-Zms9kI8pAA) in the Futureverse GraphQL Sandbox.
 
 ## More on Requests
 
