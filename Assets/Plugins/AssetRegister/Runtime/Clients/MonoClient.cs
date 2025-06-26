@@ -17,7 +17,7 @@ namespace AssetRegister.Runtime.Clients
 {
 	public sealed class MonoClient : MonoBehaviour, IClient
 	{
-		private enum Environment
+		public enum Environment
 		{
 			Staging,
 			Production,
@@ -29,7 +29,12 @@ namespace AssetRegister.Runtime.Clients
 
 		private void Awake()
 		{
-			var target = _environment switch
+			SetEnvironment(_environment);
+		}
+
+		public void SetEnvironment(Environment environment)
+		{
+			var target = environment switch
 			{
 				Environment.Production => "app",
 				Environment.Staging => "cloud",
