@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.6.0...v0.7.0) (2025-06-26)
+
+
+### Features
+
+* Added method to set environment on MonoClient ([28317c5](https://github.com/futureversecom/sdk-unity-asset-register/commit/28317c5f264500242bc084e62f5f2b4033ca494f))
+
+
+
 # [0.6.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.5.0...v0.6.0) (2025-06-24)
 
 
