@@ -1,3 +1,12 @@
+# [0.8.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.7.0...v0.8.0) (2025-07-02)
+
+
+### Features
+
+* Added support for interface types ([ba14cef](https://github.com/futureversecom/sdk-unity-asset-register/commit/ba14cef71cfbb9ac7a8572d8a2befcd6513c80ec))
+
+
+
 # [0.7.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.6.0...v0.7.0) (2025-06-26)
 
 
