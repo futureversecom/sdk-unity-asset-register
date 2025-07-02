@@ -184,7 +184,7 @@ if (response.TryGetResult<AssetResult>(out var result))
 
 ### Interfaces
 
-Interfaces will be supported in a future version.
+Any `IMemberSubBuilder` can call `.OnInterface()`, which takes an Expression parameter that must end in an interface type that derives from `IInterface`. `.OnInterface()` returns an `IInterfaceSubBuilder` object. GraphQL interface types ([See here](https://graphql.org/learn/schema/#interface-types)) are similar to Unions, but they can have some fields that are common to all implementations. Therefore, `IInterfaceSubBuilder` has all the same methods as `IMemberSubBuilder` (WithField, OnMember, etc.), and also has an `.On<T>()` method similar to the `IUnionSubBuilder`, where `T` must derive from the interface type provided.
 
 ### Putting it all together
 
