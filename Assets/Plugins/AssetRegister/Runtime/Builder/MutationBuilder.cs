@@ -17,7 +17,7 @@ namespace AssetRegister.Runtime.Builder
 			var builder = MethodSubBuilder<MutationBuilder, TSchema>.FromMutation(this, mutation);
 			Providers.Add(builder);
 
-			var innerName = Utils.GetSchemaName<TSchema>();
+			var innerName = BuilderUtils.GetSchemaName<TSchema>();
 			var innerBuilder = new MemberSubBuilder<IMutationBuilder, TSchema>(this, innerName);
 			builder.Children.Add(innerBuilder);
 			

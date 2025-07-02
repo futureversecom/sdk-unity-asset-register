@@ -2,46 +2,45 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 using Plugins.AssetRegister.Runtime.Utils;
 #if USING_UNITASK
-using System.Threading;
 using Cysharp.Threading.Tasks;
+using System.Threading;
 #else
 using System.Collections;
 #endif
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class MemberSubBuilder<TBuilder, TType> : IMemberSubBuilder<TBuilder, TType>, ITokenProvider
-		where TBuilder : IBuilder
+	internal class InterfaceSubBuilder<TBuilder, TInterface> : IInterfaceSubBuilder<TBuilder, TInterface>, ITokenProvider
+		where TBuilder : IBuilder where TInterface : IInterface
 	{
-		public List<IProvider> Children { get; } = new();
 		public string TokenString { get; }
+		public List<IProvider> Children { get; } = new();
 		
 		private readonly TBuilder _parentBuilder;
-
-		public MemberSubBuilder(TBuilder parentBuilder, string memberName)
+		
+		public InterfaceSubBuilder(TBuilder parentBuilder, string memberName)
 		{
-			_parentBuilder = parentBuilder;
 			TokenString = memberName;
+			_parentBuilder = parentBuilder;
+			
+			// Typename required for deserialization
+			Children.Add(new FieldToken("__typename"));
 		}
 
-		public TBuilder Done()
-			=> _parentBuilder;
-
-		public IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector)
+		public IInterfaceSubBuilder<TBuilder, TInterface> WithField<TField>(Expression<Func<TInterface, TField>> fieldSelector)
 		{
 			BuilderUtils.ProcessPath(fieldSelector.Body, this);
 			return this;
 		}
 
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMember<TField>(
-			Expression<Func<TType, TField>> memberSelector)
+		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnMember<TField>(
+			Expression<Func<TInterface, TField>> memberSelector)
 		{
 			if (memberSelector.Body is not MemberExpression memberExpression)
 			{
@@ -52,13 +51,13 @@ namespace AssetRegister.Runtime.Builder
 			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
 
 			var token = BuilderUtils.ProcessPath(memberExpression.Expression, this);
-			var builder = new MemberSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			var builder = new MemberSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>(this, name);
 			token.Children.Add(builder);
 			return builder;
 		}
  
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnArray<TField, TArray>(
-			Expression<Func<TType, TArray>> arraySelector)
+		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnArray<TField, TArray>(
+			Expression<Func<TInterface, TArray>> arraySelector)
 			where TArray : IEnumerable<TField>
 		{
 			if (arraySelector.Body is not MemberExpression memberExpression || !BuilderUtils.IsMemberArray(memberExpression))
@@ -70,12 +69,12 @@ namespace AssetRegister.Runtime.Builder
 			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
 
 			var token = BuilderUtils.ProcessPath(memberExpression.Expression, this);
-			var builder = new MemberSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			var builder = new MemberSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>(this, name);
 			token.Children.Add(builder);
 			return builder;
 		}
 
-		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMethod<TField>(Expression<Func<TType, TField>> methodSelector)
+		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnMethod<TField>(Expression<Func<TInterface, TField>> methodSelector)
 		{
 			if (methodSelector.Body is not MethodCallExpression methodExpression)
 			{
@@ -84,7 +83,7 @@ namespace AssetRegister.Runtime.Builder
 
 			var token = BuilderUtils.ProcessPath(methodExpression.Object, this);
 			var builder =
-				MethodSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>.FromMethodCallExpression(
+				MethodSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>.FromMethodCallExpression(
 					this,
 					methodExpression
 				);
@@ -92,8 +91,8 @@ namespace AssetRegister.Runtime.Builder
 			return builder;
 		}
 
-		public IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnUnion<TField>(
-			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion
+		public IUnionSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnUnion<TField>(
+			Expression<Func<TInterface, TField>> unionSelector) where TField : class, IUnion
 		{
 			if (unionSelector.Body is not MemberExpression memberExpression || !BuilderUtils.IsMemberUnion(memberExpression))
 			{
@@ -104,13 +103,13 @@ namespace AssetRegister.Runtime.Builder
 			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
 
 			var token = BuilderUtils.ProcessPath(memberExpression.Expression, this);
-			var builder = new UnionSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			var builder = new UnionSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>(this, name);
 			token.Children.Add(builder);
 			return builder;
 		}
 
-		public IInterfaceSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnInterface<TField>(
-			Expression<Func<TType, TField>> interfaceSelector) where TField : IInterface
+		public IInterfaceSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnInterface<TField>(
+			Expression<Func<TInterface, TField>> interfaceSelector) where TField : IInterface
 		{
 			if (interfaceSelector.Body is not MemberExpression memberExpression || !BuilderUtils.IsMemberInterface(memberExpression))
 			{
@@ -121,15 +120,25 @@ namespace AssetRegister.Runtime.Builder
 			var name = attribute?.PropertyName ?? memberExpression.Member.Name;
 
 			var token = BuilderUtils.ProcessPath(memberExpression.Expression, this);
-			var builder = new InterfaceSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>(this, name);
+			var builder = new InterfaceSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>(this, name);
 			token.Children.Add(builder);
 			return builder;
 		}
 
-		public IRequest Build()
+		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType> On<TInterfaceType>()
+			where TInterfaceType : TInterface
 		{
-			return _parentBuilder.Build();
+			var memberString = $"... on {typeof(TInterfaceType).Name}";
+			var builder = new MemberSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType>(this, memberString);
+			Children.Add(builder);
+			return builder;
 		}
+
+		public TBuilder Done()
+			=> _parentBuilder;
+
+		public IRequest Build()
+			=> _parentBuilder.Build();
 
 #if USING_UNITASK
 		public async UniTask<IResponse> Execute(

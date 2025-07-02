@@ -104,7 +104,7 @@ namespace AssetRegister.Runtime.Builder
 			var isToken = false;
 			var hasChildren = provider.Children != null && provider.Children.Count > 0;
 			
-			if (provider is ITokenProvider tokenProvider)
+			if (provider is ITokenProvider tokenProvider && !string.IsNullOrEmpty(tokenProvider.TokenString))
 			{
 				isToken = true;
 				queryBody.AppendLineIndented(
@@ -112,7 +112,7 @@ namespace AssetRegister.Runtime.Builder
 					depth
 				);
 			}
-			if (provider is IParameterProvider parameterProvider)
+			if (provider is IParameterProvider parameterProvider && parameterProvider.Parameters != null)
 			{
 				foreach (var param in parameterProvider.Parameters)
 				{
@@ -136,7 +136,7 @@ namespace AssetRegister.Runtime.Builder
 					queryBody,
 					parameters,
 					inputObject,
-					depth + 1
+					isToken ? depth + 1 : depth
 				);
 			}
 
