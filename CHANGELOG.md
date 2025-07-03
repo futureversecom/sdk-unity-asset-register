@@ -1,3 +1,12 @@
+## [0.8.1](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.0...v0.8.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* Id property of nodes is now publicly settable ([5be0095](https://github.com/futureversecom/sdk-unity-asset-register/commit/5be0095567beae59f5a88e65629c919132aead1b))
+
+
+
 # [0.8.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.7.0...v0.8.0) (2025-07-02)
 
 
