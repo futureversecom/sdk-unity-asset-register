@@ -1,3 +1,12 @@
+## [0.8.2](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.1...v0.8.2) (2025-07-10)
+
+
+### Bug Fixes
+
+* Update package.json ([504a491](https://github.com/futureversecom/sdk-unity-asset-register/commit/504a4915806d7e676de2901dcecbbd9d60b74285))
+
+
+
 ## [0.8.1](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.0...v0.8.1) (2025-07-03)
 
 
