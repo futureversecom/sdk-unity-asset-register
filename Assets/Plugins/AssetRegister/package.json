@@ -1,7 +1,7 @@
 {
   "name": "com.futureverse.sdk-unity-asset-register",
-  "version": "0.8.0",
-  "displayName": "Futureverse - Asset Register",
+  "version": "0.8.1",
+  "displayName": "Asset Register",
   "description": "A Unity package designed for interacting with the Asset Register service.",
   "unity": "2022.3",
   "documentationUrl": "https://github.com/futureversecom/sdk-unity-asset-register/blob/main/README.md",
