@@ -1,3 +1,12 @@
+## [0.8.3](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.2...v0.8.3) (2025-07-15)
+
+
+### Bug Fixes
+
+* Now properly handling null cases when deserializing interfaces or unions ([f7452b2](https://github.com/futureversecom/sdk-unity-asset-register/commit/f7452b20733345be91e77ac4c9f51c2a2232e49b))
+
+
+
 ## [0.8.2](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.1...v0.8.2) (2025-07-10)
 
 
