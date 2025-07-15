@@ -20,31 +20,38 @@ namespace Plugins.AssetRegister.Runtime.Utils
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (!typeof(T).IsAssignableFrom(objectType))
+            try
             {
-                throw new JsonSerializationException($"{objectType.Name} must implement {typeof(T).Name} to be used with this converter.");
+                if (!typeof(T).IsAssignableFrom(objectType))
+                {
+                    throw new JsonSerializationException($"{objectType.Name} must implement {typeof(T).Name} to be used with this converter.");
+                }
+                
+                var jo = JObject.Load(reader);
+                var typeName = jo["__typename"]?.ToString();
+
+                if (string.IsNullOrEmpty(typeName))
+                {
+                    throw new JsonSerializationException($"Missing '__typename' field for {typeof(T).Name} deserialization.");
+                }
+
+                if (!s_typeMaps.TryGetValue(objectType, out var typeMap))
+                {
+                    typeMap = CreateTypeMap(objectType);
+                    s_typeMaps[objectType] = typeMap;
+                }
+
+                if (!typeMap.TryGetValue(typeName, out var targetType))
+                {
+                    throw new JsonSerializationException($"Unknown __typename '{typeName}' for type '{objectType.Name}'.");
+                }
+
+                return jo.ToObject(targetType, serializer)!;
             }
-
-            var jo = JObject.Load(reader);
-            var typeName = jo["__typename"]?.ToString();
-
-            if (string.IsNullOrEmpty(typeName))
+            catch (Exception)
             {
-                throw new JsonSerializationException($"Missing '__typename' field for {typeof(T).Name} deserialization.");
+                return null;
             }
-
-            if (!s_typeMaps.TryGetValue(objectType, out var typeMap))
-            {
-                typeMap = CreateTypeMap(objectType);
-                s_typeMaps[objectType] = typeMap;
-            }
-
-            if (!typeMap.TryGetValue(typeName, out var targetType))
-            {
-                throw new JsonSerializationException($"Unknown __typename '{typeName}' for type '{objectType.Name}'.");
-            }
-
-            return jo.ToObject(targetType, serializer)!;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
