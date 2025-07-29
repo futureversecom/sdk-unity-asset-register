@@ -18,6 +18,8 @@ To use it in your project, you will need to include the AssetRegister.Runtime As
 
 The Asset Register SDK uses asynchronous methods to make web requests. It uses coroutines, so you must call yield return when using them. But through use of Version Defines, if you have [UniTask](https://github.com/Cysharp/UniTask) installed, it will change the signature of those asynchronous methods to use UniTask, so you can await them, and pass in a cancellation token instead of a callback.
 
+If you have UniTask in your project, but for whatever reason don't want this SDK to use it, add `AR_SDK_NO_UNITASK` to your project's scripting defines.
+
 ## Getting Started
 
 This example script shows a simple Asset Register request. It queries the Asset schema, including only the `id` field. After checking that the request has succeeded, the response is parsed for the Asset, and the `id` is logged.
