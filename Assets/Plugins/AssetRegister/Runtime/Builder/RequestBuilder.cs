@@ -7,7 +7,8 @@ using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json.Linq;
 using Plugins.AssetRegister.Runtime.Utils;
-#if USING_UNITASK
+using UnityEngine;
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
 #else
@@ -55,17 +56,19 @@ namespace AssetRegister.Runtime.Builder
 			query.Append(queryBody);
 			query.Append("}");
 			
+			Debug.Log(query.ToString());
+			
 			return new Request(query.ToString(), inputObject, _headers);
 		}
 		
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		public async UniTask<IResponse> 
 #else 
 		public IEnumerator
 #endif
 			Execute(
 				IClient client,
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 				CancellationToken cancellationToken = default
 #else
 				Action<IResponse> onComplete = null
@@ -73,7 +76,7 @@ namespace AssetRegister.Runtime.Builder
 			)
 		{
 			var request = Build();
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 			return await client.SendRequest(request, cancellationToken);
 #else
 			yield return client.SendRequest(request, onComplete);

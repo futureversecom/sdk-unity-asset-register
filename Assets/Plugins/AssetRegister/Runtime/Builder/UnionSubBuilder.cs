@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using AssetRegister.Runtime.Interfaces;
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
 #else
@@ -49,7 +49,7 @@ namespace AssetRegister.Runtime.Builder
 			return _parentBuilder.Build();
 		}
 
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		public async UniTask<IResponse> Execute(
 			IClient client,
 			CancellationToken cancellationToken = default)

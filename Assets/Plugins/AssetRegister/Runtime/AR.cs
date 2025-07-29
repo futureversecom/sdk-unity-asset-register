@@ -4,16 +4,7 @@ using System.Collections.Generic;
 using AssetRegister.Runtime.Builder;
 using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
-using AssetRegister.Runtime.Schema.Queries;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
-#if USING_UNITASK
-using System.Threading;
-using Cysharp.Threading.Tasks;
-#else
-using System;
-using System.Collections;
-#endif
 
 namespace Plugins.AssetRegister.Runtime
 {

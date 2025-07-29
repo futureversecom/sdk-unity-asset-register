@@ -1,6 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using System.Threading;
 using Cysharp.Threading.Tasks;
 #else
@@ -15,7 +15,7 @@ namespace AssetRegister.Runtime.Interfaces
 	/// </summary>
 	public interface IClient
 	{
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		/// <summary>
 		/// Sends the http request and produces a response
 		/// </summary>
@@ -34,7 +34,7 @@ namespace AssetRegister.Runtime.Interfaces
 #endif
 		SendRequest(
 			IRequest request,
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 			CancellationToken cancellationToken = default
 #else
 			Action<IResponse> callback = null

@@ -8,7 +8,7 @@ using System.Reflection;
 using AssetRegister.Runtime.Interfaces;
 using Newtonsoft.Json;
 using Plugins.AssetRegister.Runtime.Utils;
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using System.Threading;
 using Cysharp.Threading.Tasks;
 #else
@@ -131,7 +131,7 @@ namespace AssetRegister.Runtime.Builder
 			return _parentBuilder.Build();
 		}
 
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		public async UniTask<IResponse> Execute(
 			IClient client,
 			CancellationToken cancellationToken = default)

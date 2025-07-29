@@ -6,7 +6,7 @@ using AssetRegister.Runtime.Core;
 using AssetRegister.Runtime.Interfaces;
 using UnityEngine;
 using UnityEngine.Networking;
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using System.Threading;
 using Cysharp.Threading.Tasks;
 #else 
@@ -43,14 +43,14 @@ namespace AssetRegister.Runtime.Clients
 			_graphQLEndpoint = $"https://ar-api.futureverse.{target}/graphql";
 		}
 
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		public async UniTask<IResponse> 
 #else
 		public IEnumerator
 #endif
 		SendRequest(
 			IRequest request,
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 			CancellationToken cancellationToken = default
 #else
 			Action<IResponse> callback = null
@@ -67,7 +67,7 @@ namespace AssetRegister.Runtime.Clients
 				webRequest.SetRequestHeader(header.Key, header.Value);
 			}
 
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 			await webRequest.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
 #else
 			yield return webRequest.SendWebRequest();
@@ -75,7 +75,7 @@ namespace AssetRegister.Runtime.Clients
 
 			if (webRequest.result != UnityWebRequest.Result.Success)
 			{
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 				return new Response(null, webRequest.error);
 #else
 				callback?.Invoke(new Response(null, webRequest.error));
@@ -85,7 +85,7 @@ namespace AssetRegister.Runtime.Clients
 
 			var resultString = webRequest.downloadHandler.text;
 			var response = Response.Parse(resultString);
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 			return response;
 #else
 			callback?.Invoke(response);

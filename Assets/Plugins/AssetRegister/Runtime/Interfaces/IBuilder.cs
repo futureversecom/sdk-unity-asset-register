@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
 using Plugins.AssetRegister.Runtime.Schema.Interfaces;
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
 #else
@@ -25,7 +25,7 @@ namespace AssetRegister.Runtime.Interfaces
 		/// </summary>
 		/// <returns>Request object</returns>
 		IRequest Build();
-#if USING_UNITASK
+#if USING_UNITASK && !AR_SDK_NO_UNITASK
 		/// <summary>
 		/// Shortcut method that generates the Request, passes it to the client, and returns the response
 		/// </summary>
