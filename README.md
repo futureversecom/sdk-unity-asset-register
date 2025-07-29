@@ -1,9 +1,12 @@
-# Asset Register SDK
+# Unity Asset Register SDK
 
-A Unity client for the Asset Register. Provides an API for creating and sending requests to the AR GraphQL server.
+**An Asset Register client plugin for Unity, by [Futureverse](https://www.futureverse.com)**
 
-> [!TIP]
-> See https://ar-docs.futureverse.app/ for details on the Asset Register.
+The **Asset Register SDK** is a Unity Engine plugin for creating and sending GraphQL requests to the **Asset Register**. It provides a flexible interface for constructing queries, handling responses, and integrating with Futureverse asset data.
+
+> See https://ar-docs.futureverse.app/ for more specific details on the Asset Register.
+
+> For more on the broader Futureverse developer ecosystem, visit the [Futureverse Documentation Hub](https://docs.futureverse.com).
 
 ## Installation
 
@@ -75,7 +78,7 @@ public class Example : MonoBehaviour
   [SerializeField] private string _collectionId;
   [SerializeField] private string _tokenId;
 ```
-This script is a MonoBehaviour, so you can add it as a component in your scene. It serializes the Collection ID and Token ID, so you can edit those fields directly on the commponent. It also serializes a MonoClient, which implements the IClient interface. The client is responsible for sending a request and producing a response.
+This script is a MonoBehaviour, so you can add it as a component in your scene. It serializes the Collection ID and Token ID, so you can edit those fields directly on the component. It also serializes a MonoClient, which implements the IClient interface. The client is responsible for sending a request and producing a response.
 
 ### Building the Query
 ```csharp
@@ -147,7 +150,7 @@ You can also chain members together in the Expression, e.g. `a => a.Collection.C
 It is never necessary to use `.OnMember()`, but it is useful when you have many nested fields to add, and can help to make your request builder more readable.
 
 ### Arrays
-When using `.WithField()`, you will likely come accross an array type, and may think to do something like this: `.WithField(a => a.Items[0].Content)`. This will not work, but `IMemberSubBuilder` comes with `.WithArray()` that enables you to add fields from an array in the request. Using this, we can transform the incorrect code into the proper solution:
+When using `.WithField()`, you will likely come across an array type, and may think to do something like this: `.WithField(a => a.Items[0].Content)`. This will not work, but `IMemberSubBuilder` comes with `.WithArray()` that enables you to add fields from an array in the request. Using this, we can transform the incorrect code into the proper solution:
 
 ```csharp
 .OnArray(a => a.Items)
@@ -252,7 +255,7 @@ You can create an `IRequest` object from a raw query string by calling `AR.RawRe
 
 ### Caching
 
-Due to its use of reflection, using the RequestBuilder system frequently could be a performance concern. If you are sending the same query multiple times, it is recommended to cache the `IRequest` object that is created by the ReqeustBuilder, and pass that into `IClient.SendRequest` rather than using the `.Execute()` shorthand.
+Due to its use of reflection, using the RequestBuilder system frequently could be a performance concern. If you are sending the same query multiple times, it is recommended to cache the `IRequest` object that is created by the RequestBuilder, and pass that into `IClient.SendRequest` rather than using the `.Execute()` shorthand.
 
 If you need to send the same request but with different variables, the `IRequest` interface provides an `OverrideInputs` method. This can be used like so:
 
@@ -269,3 +272,9 @@ request.OverrideInputs(new AssetInput(_collectionId2, _tokenId2));
 
 yield return _client.SendRequest(request, r => response = r);
 ```
+
+---
+
+## 📄 License
+
+This SDK is released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
