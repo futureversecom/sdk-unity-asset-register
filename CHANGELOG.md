@@ -1,3 +1,12 @@
+## [0.8.4](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.3...v0.8.4) (2025-07-30)
+
+
+### Bug Fixes
+
+* You can now disable UniTask by adding AR_SDK_NO_UNITASK to your project's scripting defines ([0d33925](https://github.com/futureversecom/sdk-unity-asset-register/commit/0d3392558a4d83f8c4490db3816a0e53d63246e4))
+
+
+
 ## [0.8.3](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.2...v0.8.3) (2025-07-15)
 
 
