@@ -1,6 +1,6 @@
 {
   "name": "com.futureverse.sdk-unity-asset-register",
-  "version": "0.8.4",
+  "version": "0.9.0",
   "displayName": "Asset Register",
   "description": "A Unity package designed for interacting with the Asset Register service.",
   "unity": "2022.3",
