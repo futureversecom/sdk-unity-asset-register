@@ -1,3 +1,12 @@
+## [0.9.1](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.9.0...v0.9.1) (2025-08-01)
+
+
+### Bug Fixes
+
+* Removed debug log ([36c761f](https://github.com/futureversecom/sdk-unity-asset-register/commit/36c761f5962c2824460d4d39b5f845ae939ff808))
+
+
+
 # [0.9.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.4...v0.9.0) (2025-08-01)
 
 
