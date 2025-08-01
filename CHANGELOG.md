@@ -1,3 +1,12 @@
+# [0.9.0](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.4...v0.9.0) (2025-08-01)
+
+
+### Features
+
+* Added profiles method to Asset schema so a key can be added ([31ac9be](https://github.com/futureversecom/sdk-unity-asset-register/commit/31ac9befdb7dc8dcec572ad6800b35341f178adc))
+
+
+
 ## [0.8.4](https://github.com/futureversecom/sdk-unity-asset-register/compare/v0.8.3...v0.8.4) (2025-07-30)
 
 
