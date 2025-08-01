@@ -1,5 +1,6 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
+using AssetRegister.Runtime.Attributes;
 using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Schema.Enums;
 using AssetRegister.Runtime.Schema.Unions;
@@ -24,6 +25,13 @@ namespace AssetRegister.Runtime.Schema.Objects
 		[JsonProperty("profiles")] public JObject Profiles;
 		[JsonProperty("schema")] public Schema Schema;
 		[JsonProperty("tokenId")] public string TokenId;
+		
+		// ReSharper disable once InconsistentNaming
+		public JObject profiles([String] string key)
+		{
+			return Profiles;
+		}
+
 	}
 	
 	[JsonObject]
