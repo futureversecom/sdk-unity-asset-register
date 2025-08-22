@@ -13,6 +13,16 @@ namespace AssetRegister.Runtime.Schema.Objects
 	[JsonObject("asset")]
 	public sealed class Asset : NodeBase
 	{
+		public sealed class ProfilesInput : IInput
+		{
+			[String, Required, JsonProperty("key")] public string Key;
+
+			public ProfilesInput(string key)
+			{
+				Key = key;
+			}
+		}
+		
 		[JsonProperty("assetTree")] public AssetTree AssetTree;
 		[JsonProperty("assetType")] public AssetType AssetType;
 		[JsonProperty("collection")] public Collection Collection;
@@ -25,13 +35,6 @@ namespace AssetRegister.Runtime.Schema.Objects
 		[JsonProperty("profiles")] public JObject Profiles;
 		[JsonProperty("schema")] public Schema Schema;
 		[JsonProperty("tokenId")] public string TokenId;
-		
-		// ReSharper disable once InconsistentNaming
-		public JObject profiles([String] string key)
-		{
-			return Profiles;
-		}
-
 	}
 	
 	[JsonObject]

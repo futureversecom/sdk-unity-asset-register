@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using AssetRegister.Runtime.Interfaces;
+using Plugins.AssetRegister.Runtime.Utils;
 #if USING_UNITASK && !AR_SDK_NO_UNITASK
 using Cysharp.Threading.Tasks;
 using System.Threading;
@@ -12,16 +13,18 @@ using System.Collections;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class UnionSubBuilder<TBuilder, TUnion> : IUnionSubBuilder<TBuilder, TUnion>, ITokenProvider
+	internal class UnionSubBuilder<TBuilder, TUnion> : IUnionSubBuilder<TBuilder, TUnion>, IProvider
 		where TBuilder : IBuilder 
 		where TUnion : class, IUnion
 	{
-		public string TokenString { get; }
+		public string TokenString { get; private set; }
+		public IInput Input { get; private set; }
+		public List<IParameter> Parameters { get; private set; }
 		public List<IProvider> Children { get; } = new();
 		
 		private readonly TBuilder _parentBuilder;
 
-		public UnionSubBuilder(TBuilder parentBuilder, string memberName)
+		internal UnionSubBuilder(TBuilder parentBuilder, string memberName)
 		{
 			TokenString = memberName;
 			_parentBuilder = parentBuilder;
@@ -43,7 +46,15 @@ namespace AssetRegister.Runtime.Builder
 			Children.Add(builder);
 			return builder;
 		}
-		
+
+		public IUnionSubBuilder<TBuilder, TUnion> WithInput<TInput>(TInput input) where TInput : class, IInput
+		{
+			Parameters = BuilderUtils.CreateParametersFromInput(input);
+			TokenString = BuilderUtils.BuildTokenString(TokenString, Parameters);
+			Input = input;
+			return this;
+		}
+
 		public IRequest Build()
 		{
 			return _parentBuilder.Build();

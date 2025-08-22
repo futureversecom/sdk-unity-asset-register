@@ -16,15 +16,17 @@ using System.Collections;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class InterfaceSubBuilder<TBuilder, TInterface> : IInterfaceSubBuilder<TBuilder, TInterface>, ITokenProvider
+	internal class InterfaceSubBuilder<TBuilder, TInterface> : IInterfaceSubBuilder<TBuilder, TInterface>, IProvider
 		where TBuilder : IBuilder where TInterface : IInterface
 	{
-		public string TokenString { get; }
+		public string TokenString { get; private set; }
+		public IInput Input { get; private set; }
+		public List<IParameter> Parameters { get; private set; }
 		public List<IProvider> Children { get; } = new();
 		
 		private readonly TBuilder _parentBuilder;
 		
-		public InterfaceSubBuilder(TBuilder parentBuilder, string memberName)
+		internal InterfaceSubBuilder(TBuilder parentBuilder, string memberName)
 		{
 			TokenString = memberName;
 			_parentBuilder = parentBuilder;
@@ -55,7 +57,15 @@ namespace AssetRegister.Runtime.Builder
 			token.Children.Add(builder);
 			return builder;
 		}
- 
+
+		public IInterfaceSubBuilder<TBuilder, TInterface> WithInput<TInput>(TInput input) where TInput : class, IInput
+		{
+			Parameters = BuilderUtils.CreateParametersFromInput(input);
+			TokenString = BuilderUtils.BuildTokenString(TokenString, Parameters);
+			Input = input;
+			return this;
+		}
+
 		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnArray<TField, TArray>(
 			Expression<Func<TInterface, TArray>> arraySelector)
 			where TArray : IEnumerable<TField>
@@ -70,23 +80,6 @@ namespace AssetRegister.Runtime.Builder
 
 			var token = BuilderUtils.ProcessPath(memberExpression.Expression, this);
 			var builder = new MemberSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>(this, name);
-			token.Children.Add(builder);
-			return builder;
-		}
-
-		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnMethod<TField>(Expression<Func<TInterface, TField>> methodSelector)
-		{
-			if (methodSelector.Body is not MethodCallExpression methodExpression)
-			{
-				throw new ArgumentException(".OnMethod() expression must end with a method call");
-			}
-
-			var token = BuilderUtils.ProcessPath(methodExpression.Object, this);
-			var builder =
-				MethodSubBuilder<InterfaceSubBuilder<TBuilder, TInterface>, TField>.FromMethodCallExpression(
-					this,
-					methodExpression
-				);
 			token.Children.Add(builder);
 			return builder;
 		}
