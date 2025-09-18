@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using AssetRegister.Runtime.Interfaces;
@@ -16,17 +17,15 @@ using System.Collections;
 
 namespace AssetRegister.Runtime.Builder
 {
-	internal class MemberSubBuilder<TBuilder, TType> : IMemberSubBuilder<TBuilder, TType>, IProvider
+	internal class MemberSubBuilder<TBuilder, TType> : IMemberSubBuilder<TBuilder, TType>, ITokenProvider
 		where TBuilder : IBuilder
 	{
 		public List<IProvider> Children { get; } = new();
-		public string TokenString { get; private set; }
-		public List<IParameter> Parameters { get; private set; }
-		public IInput Input { get; private set; }
+		public string TokenString { get; }
 		
 		private readonly TBuilder _parentBuilder;
 
-		internal MemberSubBuilder(TBuilder parentBuilder, string memberName)
+		public MemberSubBuilder(TBuilder parentBuilder, string memberName)
 		{
 			_parentBuilder = parentBuilder;
 			TokenString = memberName;
@@ -38,14 +37,6 @@ namespace AssetRegister.Runtime.Builder
 		public IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector)
 		{
 			BuilderUtils.ProcessPath(fieldSelector.Body, this);
-			return this;
-		}
-
-		public IMemberSubBuilder<TBuilder, TType> WithInput<TInput>(TInput input) where TInput: class, IInput
-		{ 
-			Parameters = BuilderUtils.CreateParametersFromInput(input);
-			TokenString = BuilderUtils.BuildTokenString(TokenString, Parameters);
-			Input = input;
 			return this;
 		}
 
@@ -83,7 +74,24 @@ namespace AssetRegister.Runtime.Builder
 			token.Children.Add(builder);
 			return builder;
 		}
-		
+
+		public IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMethod<TField>(Expression<Func<TType, TField>> methodSelector)
+		{
+			if (methodSelector.Body is not MethodCallExpression methodExpression)
+			{
+				throw new ArgumentException(".OnMethod() expression must end with a method call");
+			}
+
+			var token = BuilderUtils.ProcessPath(methodExpression.Object, this);
+			var builder =
+				MethodSubBuilder<MemberSubBuilder<TBuilder, TType>, TField>.FromMethodCallExpression(
+					this,
+					methodExpression
+				);
+			token.Children.Add(builder);
+			return builder;
+		}
+
 		public IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnUnion<TField>(
 			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion
 		{

@@ -97,13 +97,6 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>This builder</returns>
 		IMemberSubBuilder<TBuilder, TType> WithField<TField>(Expression<Func<TType, TField>> fieldSelector);
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="input"></param>
-		/// <typeparam name="TInput"></typeparam>
-		/// <returns></returns>
-		IMemberSubBuilder<TBuilder, TType> WithInput<TInput>(TInput input) where TInput : class, IInput;
-		/// <summary>
 		/// Add a field from this member type to the query. Generates a sub builder where TType is TField
 		/// </summary>
 		/// <param name="memberSelector">Expression that returns a field from the member type.
@@ -122,6 +115,15 @@ namespace AssetRegister.Runtime.Interfaces
 		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnArray<TField, TArray>(
 			Expression<Func<TType, TArray>> arraySelector) where TArray : IEnumerable<TField>;
 		/// <summary>
+		/// Add a method from this member type to the query
+		/// </summary>
+		/// <param name="methodSelector">Expression that returns a method call from the member type.
+		/// e.g. if TType is SFTAssetOwnership, fieldSelector can be sft => sft.balanceOf("")
+		/// </param>
+		/// <typeparam name="TField">Return type of the method that is selected by the fieldSelector expression</typeparam>
+		/// <returns>The generated sub-builder</returns>
+		IMemberSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnMethod<TField>(Expression<Func<TType, TField>> methodSelector);
+		/// <summary>
 		/// Adds a union from this member type to the query
 		/// </summary>
 		/// <param name="unionSelector">Expression that returns a member of Union type from the member</param>
@@ -129,12 +131,7 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>The generated sub-builder</returns>
 		IUnionSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnUnion<TField>(
 			Expression<Func<TType, TField>> unionSelector) where TField : class, IUnion;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="interfaceSelector"></param>
-		/// <typeparam name="TField"></typeparam>
-		/// <returns></returns>
+
 		IInterfaceSubBuilder<IMemberSubBuilder<TBuilder, TType>, TField> OnInterface<TField>(
 			Expression<Func<TType, TField>> interfaceSelector) where TField : IInterface;
 	}
@@ -144,7 +141,7 @@ namespace AssetRegister.Runtime.Interfaces
 	/// </summary>
 	/// <typeparam name="TBuilder">Parent builder that created this sub-builder</typeparam>
 	/// <typeparam name="TUnion">The union type that this builder is created for</typeparam>
-	public interface IUnionSubBuilder<out TBuilder, TUnion> : ISubBuilder<TBuilder>
+	public interface IUnionSubBuilder<out TBuilder, in TUnion> : ISubBuilder<TBuilder>
 		where TBuilder : IBuilder where TUnion : class, IUnion
 	{
 		/// <summary>
@@ -154,13 +151,6 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>Generated sub-builder</returns>
 		public IMemberSubBuilder<IUnionSubBuilder<TBuilder, TUnion>, TUnionType> On<TUnionType>()
 			where TUnionType : class, TUnion;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="input"></param>
-		/// <typeparam name="TInput"></typeparam>
-		/// <returns></returns>
-		IUnionSubBuilder<TBuilder, TUnion> WithInput<TInput>(TInput input) where TInput : class, IInput;
 	}
 
 	public interface IInterfaceSubBuilder<out TBuilder, TInterface> : ISubBuilder<TBuilder>
@@ -186,13 +176,6 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>The generated sub-builder</returns>
 		IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnMember<TField>(Expression<Func<TInterface, TField>> memberSelector);
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="input"></param>
-		/// <typeparam name="TInput"></typeparam>
-		/// <returns></returns>
-		IInterfaceSubBuilder<TBuilder, TInterface> WithInput<TInput>(TInput input) where TInput : class, IInput;
-		/// <summary>
 		/// Add an array type member from this member to the query
 		/// </summary>
 		/// <param name="arraySelector">Expression that returns an array type</param>
@@ -202,6 +185,15 @@ namespace AssetRegister.Runtime.Interfaces
 		IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnArray<TField, TArray>(
 			Expression<Func<TInterface, TArray>> arraySelector) where TArray : IEnumerable<TField>;
 		/// <summary>
+		/// Add a method from this member type to the query
+		/// </summary>
+		/// <param name="methodSelector">Expression that returns a method call from the member type.
+		/// e.g. if TType is SFTAssetOwnership, fieldSelector can be sft => sft.balanceOf("")
+		/// </param>
+		/// <typeparam name="TField">Return type of the method that is selected by the fieldSelector expression</typeparam>
+		/// <returns>The generated sub-builder</returns>
+		IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnMethod<TField>(Expression<Func<TInterface, TField>> methodSelector);
+		/// <summary>
 		/// Adds a union from this member type to the query
 		/// </summary>
 		/// <param name="unionSelector">Expression that returns a member of Union type from the member</param>
@@ -209,19 +201,9 @@ namespace AssetRegister.Runtime.Interfaces
 		/// <returns>The generated sub-builder</returns>
 		IUnionSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnUnion<TField>(
 			Expression<Func<TInterface, TField>> unionSelector) where TField : class, IUnion;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="interfaceSelector"></param>
-		/// <typeparam name="TField"></typeparam>
-		/// <returns></returns>
+
 		IInterfaceSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TField> OnInterface<TField>(
 			Expression<Func<TInterface, TField>> interfaceSelector) where TField : IInterface;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="TInterfaceType"></typeparam>
-		/// <returns></returns>
 		public IMemberSubBuilder<IInterfaceSubBuilder<TBuilder, TInterface>, TInterfaceType> On<TInterfaceType>()
 			where TInterfaceType : TInterface;
 	}

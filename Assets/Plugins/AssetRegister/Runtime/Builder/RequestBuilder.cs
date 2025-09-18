@@ -105,24 +105,24 @@ namespace AssetRegister.Runtime.Builder
 			var isToken = false;
 			var hasChildren = provider.Children != null && provider.Children.Count > 0;
 			
-			if (!string.IsNullOrEmpty(provider.TokenString))
+			if (provider is ITokenProvider tokenProvider && !string.IsNullOrEmpty(tokenProvider.TokenString))
 			{
 				isToken = true;
 				queryBody.AppendLineIndented(
-					hasChildren ? $"{provider.TokenString} {{" : provider.TokenString,
+					hasChildren ? $"{tokenProvider.TokenString} {{" : tokenProvider.TokenString,
 					depth
 				);
 			}
-			if (provider.Parameters != null)
+			if (provider is IParameterProvider parameterProvider && parameterProvider.Parameters != null)
 			{
-				foreach (var param in provider.Parameters)
+				foreach (var param in parameterProvider.Parameters)
 				{
 					parameters.Add(param);
 				}
 			}
-			if (provider.Input != null)
+			if (provider is IInputProvider inputProvider && inputProvider.Input != null)
 			{
-				inputObject.Merge(JObject.FromObject(provider.Input));
+				inputObject.Merge(JObject.FromObject(inputProvider.Input));
 			}
 
 			if (!hasChildren)

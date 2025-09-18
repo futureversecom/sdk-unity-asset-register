@@ -1,6 +1,5 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System;
 using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Schema.Objects;
 using Plugins.AssetRegister.Runtime.Schema.Mutations;
@@ -15,10 +14,9 @@ namespace AssetRegister.Runtime.Builder
 		public IMemberSubBuilder<IMutationBuilder, TSchema> Add<TSchema, TInput>(IMutation<TSchema, TInput> mutation)
 			where TSchema : ISchema where TInput : class, IInput
 		{
-			var builder = new MemberSubBuilder<MutationBuilder, TSchema>(this, mutation.FunctionName);
-			builder.WithInput(mutation.Input);
+			var builder = MethodSubBuilder<MutationBuilder, TSchema>.FromMutation(this, mutation);
 			Providers.Add(builder);
-			
+
 			var innerName = BuilderUtils.GetSchemaName<TSchema>();
 			var innerBuilder = new MemberSubBuilder<IMutationBuilder, TSchema>(this, innerName);
 			builder.Children.Add(innerBuilder);

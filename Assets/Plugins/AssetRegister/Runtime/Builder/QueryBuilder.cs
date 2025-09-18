@@ -1,12 +1,10 @@
 // Copyright (c) 2025, Futureverse Corporation Limited. All rights reserved.
 
-using System;
 using AssetRegister.Runtime.Interfaces;
 using AssetRegister.Runtime.Schema.Input;
 using AssetRegister.Runtime.Schema.Objects;
 using AssetRegister.Runtime.Schema.Queries;
 using Plugins.AssetRegister.Runtime.Schema.Interfaces;
-using UnityEditor;
 
 namespace AssetRegister.Runtime.Builder
 {
@@ -16,9 +14,8 @@ namespace AssetRegister.Runtime.Builder
 
 		private IMemberSubBuilder<IQueryBuilder, TSchema> AddMethodBuilder<TSchema, TInput>(IQuery<TSchema, TInput> query)
 			where TSchema : ISchema where TInput : class, IInput
-        {
-            var builder = new MemberSubBuilder<QueryBuilder, TSchema>(this, query.QueryName);
-            builder.WithInput(query.Input);
+		{
+			var builder = MethodSubBuilder<QueryBuilder, TSchema>.FromQuery(this, query);
 			Providers.Add(builder);
 			return builder;
 		}
@@ -26,8 +23,7 @@ namespace AssetRegister.Runtime.Builder
         private IInterfaceSubBuilder<IQueryBuilder, TSchema> AddInterfaceBuilder<TSchema, TInput>(IQuery<TSchema, TInput> query)
             where TSchema : ISchema, IInterface where TInput : class, IInput
         {
-            var builder = new MemberSubBuilder<QueryBuilder, TSchema>(this, query.QueryName);
-            builder.WithInput(query.Input);
+            var builder = MethodSubBuilder<QueryBuilder, TSchema>.FromQuery(this, query);
             var interfaceBuilder = new InterfaceSubBuilder<QueryBuilder, TSchema>(this, null);
             builder.Children.Add(interfaceBuilder);
             Providers.Add(builder);

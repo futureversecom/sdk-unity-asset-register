@@ -128,7 +128,7 @@ namespace Plugins.AssetRegister.Runtime.Utils
             return $"{name}: ${parameter.ParameterName}";
         }
 		
-		internal static IProvider ProcessPath(Expression expression, IProvider currentProvider)
+		internal static IProvider ProcessPath(Expression expression, ITokenProvider currentProvider)
 		{
 			var stack = new Stack<string>();
 			while (expression != null && expression.NodeType != ExpressionType.Parameter)
@@ -150,14 +150,14 @@ namespace Plugins.AssetRegister.Runtime.Utils
 			while (stack.TryPop(out var name))
 			{
 				var existingBuilder =
-					currentProvider.Children.FirstOrDefault(c => c.TokenString == name);
+					currentProvider.Children.FirstOrDefault(c => c is ITokenProvider t && t.TokenString == name);
 				if (existingBuilder == null)
 				{
 					existingBuilder = new FieldToken(name);
 					currentProvider.Children.Add(existingBuilder);
 				}
 
-				currentProvider = existingBuilder;
+				currentProvider = (ITokenProvider)existingBuilder;
 			}
 
 			return currentProvider;
